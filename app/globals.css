@@ -102,6 +102,22 @@ h1, h2, h3, .display {
   box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 50%, transparent), 3px 4px 0 rgba(0,0,0,0.4);
 }
 
+/* Ore-card variant for wide, short rows (e.g. the results list): .ore-card's notch
+   percentages assume a roughly square box, so on a wide/short row the same corner
+   cut stretches into a long, near-flat diagonal sliver instead of a chunky notch.
+   This uses smaller X-axis and larger Y-axis percentages to keep the cut's pixel
+   depth balanced across both axes despite the skewed aspect ratio. */
+.ore-card-row {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  box-shadow: 3px 4px 0 rgba(0,0,0,0.4), 0 6px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+  clip-path: polygon(
+    1% 14%, 4% 0%, 96% 0%, 99% 14%,
+    99% 86%, 96% 100%, 4% 100%, 1% 86%
+  );
+  position: relative;
+}
+
 /* Subtler ore-card variant for form-like/informational cards: same material feel,
    a shallower notch and no rotation/lift so it doesn't compete with the game cards. */
 .ore-card-subtle {

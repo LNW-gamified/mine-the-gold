@@ -25,8 +25,8 @@ const ICON_PROPS = {
 function IconPickaxe() {
   return (
     <svg {...ICON_PROPS}>
-      <path d="M5 19 13 11" />
-      <path d="M11 5c2.8-1.6 6.2-1.2 8.4 1 2.2 2.2 2.6 5.6 1 8.4-2.8-.6-5.6-2-7.8-4.2S10.4 5.8 11 5Z" />
+      <path d="M3 11c3-6 7-9 10-9s7 3 10 9" />
+      <path d="M13 4 7 19" />
     </svg>
   );
 }

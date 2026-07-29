@@ -121,7 +121,7 @@ export default function TierSortBoard({
             return (
               <div
                 key={item.id}
-                className="ore-card p-4 flex gap-3 items-start"
+                className="ore-card-row p-4 flex gap-3 items-start"
                 style={{
                   borderLeft: `4px solid ${r.correct ? "var(--gold)" : "var(--wildcard)"}`,
                   background: r.correct ? "color-mix(in srgb, var(--gold) 8%, var(--surface-raised))" : undefined,
