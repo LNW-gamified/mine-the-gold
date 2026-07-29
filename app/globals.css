@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #100d09;
+  --surface: #1c160e;
+  --surface-raised: #271e13;
+  --border: #4a3f2c;
+  --text: #ece2cc;
+  --text-dim: #a89a7d;
+
+  --dirt: #8a6338;
+  --rock: #8a8a86;
+  --gold: #d6ab3d;
+  --nugget: #f4c542;
+  --foolsgold: #9a8f4a;
+  --wildcard: #a05a4a;
+
+  --strata: repeating-linear-gradient(
+    180deg,
+    #17120b 0px,
+    #17120b 26px,
+    #1e170e 26px,
+    #1e170e 52px
+  );
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-dim: var(--text-dim);
+  --color-dirt: var(--dirt);
+  --color-rock: var(--rock);
+  --color-gold: var(--gold);
+  --color-nugget: var(--nugget);
+  --color-foolsgold: var(--foolsgold);
+  --color-wildcard: var(--wildcard);
+  --font-display: var(--font-slab);
+  --font-body: var(--font-body);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: var(--grain);
+  pointer-events: none;
+  z-index: 50;
+  mix-blend-mode: overlay;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-slab), Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+.stencil {
+  font-family: var(--font-slab), Georgia, serif;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+}
+
+.strata {
+  background-image: var(--strata), var(--grain);
+}
+
+/* Ore-chunk card: irregular hewn silhouette instead of a plain rounded box */
+.ore-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 6px 14px rgba(0,0,0,0.35);
+  clip-path: polygon(
+    2% 8%, 12% 0%, 88% 0%, 100% 10%,
+    100% 88%, 90% 100%, 8% 100%, 0% 90%
+  );
+  position: relative;
+}
+
+.card-face {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-top-width: 4px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.4), 0 6px 16px rgba(0,0,0,0.25);
+}
+
+/* Mine cart bin used as a sort target */
+.bin {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-raised) 100%);
+  border: 2px solid var(--border);
+  border-radius: 0.25rem;
+  position: relative;
+}
+.bin::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--bin-color, var(--gold));
+}
+.bin.active {
+  border-color: var(--bin-color, var(--gold));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bin-color, var(--gold)) 25%, transparent);
+}
+
+.depth-rail {
+  background: linear-gradient(180deg, #1a140c, #0c0a06);
+  border-right: 1px solid var(--border);
+}
+.depth-node {
+  border: 2px solid var(--border);
+  background: var(--surface);
+  transition: all 0.2s ease;
+}
+.depth-node.active {
+  border-color: var(--gold);
+  background: var(--gold);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--gold) 60%, transparent);
+}
+.depth-node.done {
+  border-color: var(--gold);
+  background: var(--surface-raised);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  padding: 0.6rem 1.1rem;
+  font-weight: 600;
+  transition: transform 0.08s ease, filter 0.15s ease;
+  border: 1px solid var(--border);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn-gold {
+  background: linear-gradient(180deg, #e2bc55, var(--gold));
+  color: #1a1408;
+  border-color: #8a6a1c;
+}
+.btn-gold:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-raised);
+}
+
+input, select, textarea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.7rem;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+::selection {
+  background: var(--gold);
+  color: #1a1408;
+}
