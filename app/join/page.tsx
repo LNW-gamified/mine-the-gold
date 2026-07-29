@@ -77,7 +77,7 @@ export default function JoinPage() {
 
   return (
     <main className="flex-1 flex items-center justify-center px-6 strata">
-      <form onSubmit={handleJoin} className="card-face rounded-lg p-8 w-full max-w-sm" style={{ borderTopColor: "var(--gold)" }}>
+      <form onSubmit={handleJoin} className="ore-card-subtle p-8 w-full max-w-sm" style={{ borderTopColor: "var(--gold)" }}>
         <h1 className="text-2xl font-bold mb-1">Join the dig</h1>
         <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s room code and pick a team name.</p>
 

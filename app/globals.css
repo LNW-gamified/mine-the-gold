@@ -102,11 +102,18 @@ h1, h2, h3, .display {
   box-shadow: 0 0 12px color-mix(in srgb, var(--gold) 50%, transparent), 3px 4px 0 rgba(0,0,0,0.4);
 }
 
-.card-face {
+/* Subtler ore-card variant for form-like/informational cards: same material feel,
+   a shallower notch and no rotation/lift so it doesn't compete with the game cards. */
+.ore-card-subtle {
   background: var(--surface-raised);
   border: 1px solid var(--border);
   border-top-width: 4px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.4), 0 6px 16px rgba(0,0,0,0.25);
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.3), 0 6px 14px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+  clip-path: polygon(
+    1.5% 6%, 10% 0%, 90% 0%, 100% 7%,
+    100% 92%, 91% 100%, 9% 100%, 0% 93%
+  );
+  position: relative;
 }
 
 /* Mine cart bin used as a sort target */

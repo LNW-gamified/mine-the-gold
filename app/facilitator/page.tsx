@@ -79,7 +79,7 @@ export default function FacilitatorPage() {
     return (
       <main className="flex-1 flex flex-col items-center px-6 py-16 strata">
         <div className="max-w-md w-full">
-          <div className="card-face rounded-lg p-8 mb-8" style={{ borderTopColor: "var(--gold)" }}>
+          <div className="ore-card-subtle p-8 mb-8" style={{ borderTopColor: "var(--gold)" }}>
             <h1 className="text-2xl font-bold mb-1 stencil">Start a session</h1>
             <p className="text-text-dim text-sm mb-6">
               Reps join with a room code and play at their own pace. Every round auto-scores, nothing to run from your end once it starts.
@@ -101,7 +101,7 @@ export default function FacilitatorPage() {
           {historyOpen && (
             <div className="mt-4 space-y-3">
               {pastSessions.map((s) => (
-                <div key={s.id} className="card-face rounded p-4">
+                <div key={s.id} className="ore-card-subtle p-4">
                   <div className="flex justify-between items-baseline mb-2">
                     <p className="font-bold">{s.label}</p>
                     <p className="text-xs text-text-dim">{new Date(s.created_at).toLocaleDateString()}</p>
@@ -140,12 +140,16 @@ export default function FacilitatorPage() {
           <button className="btn btn-ghost text-sm" onClick={endSession}>End session</button>
         </header>
 
-        <section className="card-face rounded-lg p-6" style={{ borderTopColor: "var(--nugget)" }}>
+        <section className="ore-card-subtle p-6" style={{ borderTopColor: "var(--nugget)" }}>
           <h2 className="font-bold mb-4 stencil text-sm">Live leaderboard</h2>
           {teams.length === 0 && <p className="text-text-dim text-sm">No teams have joined yet. Share the room code above.</p>}
           <ol className="space-y-3">
             {teams.map((t, i) => (
-              <li key={t.id} className="flex justify-between items-center border-b border-border pb-2">
+              <li
+                key={t.id}
+                className={`flex justify-between items-center pb-2 ${i === 0 ? "rounded px-3 py-2 -mx-3" : "border-b border-border"}`}
+                style={i === 0 ? { background: "color-mix(in srgb, var(--gold) 8%, var(--surface-raised))" } : undefined}
+              >
                 <div>
                   <p className="text-sm font-bold">{i + 1}. {t.name}</p>
                   <p className="text-xs text-text-dim">{ROUND_NAMES[t.current_round]}</p>

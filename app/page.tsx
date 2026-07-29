@@ -15,14 +15,14 @@ export default function Home() {
         </p>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <Link href="/join" className="card-face rounded-lg p-6 text-left hover:brightness-110 transition" style={{ borderTopColor: "var(--gold)" }}>
+          <Link href="/join" className="ore-card-subtle p-6 text-left hover:brightness-110 transition" style={{ borderTopColor: "var(--gold)" }}>
             <h2 className="text-xl font-bold text-text mb-1">Join as a team</h2>
             <p className="text-text-dim text-sm">
               Have a room code from your facilitator? Enter it and start digging.
             </p>
           </Link>
 
-          <Link href="/facilitator" className="card-face rounded-lg p-6 text-left hover:brightness-110 transition" style={{ borderTopColor: "var(--rock)" }}>
+          <Link href="/facilitator" className="ore-card-subtle p-6 text-left hover:brightness-110 transition" style={{ borderTopColor: "var(--rock)" }}>
             <h2 className="text-xl font-bold text-text mb-1">Run a session</h2>
             <p className="text-text-dim text-sm">
               Facilitators: create a room, control rounds, and score teams live.
