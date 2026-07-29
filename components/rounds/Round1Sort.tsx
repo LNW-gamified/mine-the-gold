@@ -6,9 +6,9 @@ import type { Card } from "@/lib/types";
 import TierSortBoard, { type SortResult } from "@/components/TierSortBoard";
 
 const CODES = [
-  "dirt_01", "dirt_02", "dirt_03", "dirt_04",
-  "rock_01", "rock_02", "rock_03", "rock_04",
-  "gold_01", "gold_02", "gold_03", "gold_04",
+  "dirt_01", "dirt_02", "dirt_03",
+  "rock_01", "rock_02", "rock_03",
+  "gold_01", "gold_02", "gold_03",
 ];
 
 const BINS = [
@@ -67,7 +67,7 @@ export default function Round1Sort({
     <TierSortBoard
       items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: c.category, points: c.points }))}
       bins={BINS}
-      instructions="Twelve things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, business problem in the middle, real business consequence at the bottom."
+      instructions="Nine things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, business problem in the middle, real business consequence at the bottom."
       onSubmit={handleSubmit}
       onContinue={onDone}
       layout="stack"
