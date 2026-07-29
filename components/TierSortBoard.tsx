@@ -32,6 +32,22 @@ function hashStringToRange(str: string, min: number, max: number): number {
   return min + normalized * (max - min);
 }
 
+function IconCheck() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 12l5 5L20 6" />
+    </svg>
+  );
+}
+
+function IconX() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
+
 export default function TierSortBoard({
   items,
   bins,
@@ -94,7 +110,7 @@ export default function TierSortBoard({
     const total = results.reduce((s, r) => s + r.points, 0);
     return (
       <div>
-        <h3 className="text-xl font-bold text-nugget mb-4 text-center">
+        <h3 className="text-xl font-bold gold-text-shimmer mb-4 text-center">
           You struck {total} points
         </h3>
         <div className="space-y-2 mb-6">
@@ -105,17 +121,25 @@ export default function TierSortBoard({
             return (
               <div
                 key={item.id}
-                className="ore-card p-4"
-                style={{ borderLeft: `4px solid ${r.correct ? "var(--gold)" : "var(--wildcard)"}` }}
+                className="ore-card p-4 flex gap-3 items-start"
+                style={{
+                  borderLeft: `4px solid ${r.correct ? "var(--gold)" : "var(--wildcard)"}`,
+                  background: r.correct ? "color-mix(in srgb, var(--gold) 8%, var(--surface-raised))" : undefined,
+                }}
               >
-                <p className="text-sm mb-1">{item.label}</p>
-                <p className="text-xs text-text-dim">
-                  You placed: <span className="text-text">{bin?.label}</span>
-                  {!r.correct && correctBin && (
-                    <> &middot; Correct layer: <span className="text-gold">{correctBin.label}</span></>
-                  )}
-                  {" "}&middot; {r.points} pts
-                </p>
+                <span className="shrink-0 mt-0.5" style={{ color: r.correct ? "var(--gold)" : "var(--wildcard)" }}>
+                  {r.correct ? <IconCheck /> : <IconX />}
+                </span>
+                <div>
+                  <p className="text-sm mb-1">{item.label}</p>
+                  <p className="text-xs text-text-dim">
+                    You placed: <span className="text-text">{bin?.label}</span>
+                    {!r.correct && correctBin && (
+                      <> &middot; Correct layer: <span className="text-gold">{correctBin.label}</span></>
+                    )}
+                    {" "}&middot; {r.points} pts
+                  </p>
+                </div>
               </div>
             );
           })}
