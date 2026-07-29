@@ -141,16 +141,16 @@ export default function TierSortBoard({
               <button
                 key={bin.key}
                 onClick={() => placeIn(bin.key)}
-                className={`bin bin-${bin.colorVar} p-3 min-h-[64px] w-full flex items-center gap-3 text-left ${selected ? "active" : ""}`}
+                className={`bin bin-${bin.colorVar} p-3 min-h-[64px] w-full max-w-full overflow-hidden flex items-center gap-3 text-left ${selected ? "active" : ""}`}
                 style={{ ["--bin-color" as string]: `var(--${bin.colorVar})` }}
               >
                 <p className="stencil text-xs shrink-0" style={{ color: labelColor(bin.colorVar) }}>{bin.label}</p>
-                <div className="flex flex-wrap gap-1 justify-end flex-1">
+                <div className="flex flex-wrap gap-1 justify-end flex-1 min-w-0">
                   {placed.map((i) => (
                     <div
                       key={i.id}
                       onClick={(e) => { e.stopPropagation(); unplace(i.id); }}
-                      className="ore-card text-xs px-2 py-1"
+                      className="ore-card text-xs px-2 py-1 max-w-[240px] overflow-hidden"
                     >
                       {i.label}
                     </div>
