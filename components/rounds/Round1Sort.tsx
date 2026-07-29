@@ -8,7 +8,7 @@ import TierSortBoard, { type SortResult } from "@/components/TierSortBoard";
 const CODES = [
   "dirt_01", "dirt_02", "dirt_03",
   "rock_01", "rock_02", "rock_03",
-  "gold_01", "gold_02", "gold_03",
+  "nugget_01", "nugget_02", "nugget_03",
 ];
 
 const BINS = [
@@ -16,6 +16,12 @@ const BINS = [
   { key: "rock", label: "Rock", colorVar: "rock" },
   { key: "gold", label: "Gold", colorVar: "gold" },
 ];
+
+const BIN_FOR_CATEGORY: Record<string, string> = {
+  dirt: "dirt",
+  rock: "rock",
+  gold_nugget: "gold",
+};
 
 export default function Round1Sort({
   sessionId,
@@ -65,9 +71,9 @@ export default function Round1Sort({
 
   return (
     <TierSortBoard
-      items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: c.category, points: c.points }))}
+      items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: BIN_FOR_CATEGORY[c.category], points: c.points }))}
       bins={BINS}
-      instructions="Nine things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, business problem in the middle, real business consequence at the bottom."
+      instructions="Nine things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, business problem in the middle, real economic impact at the bottom."
       onSubmit={handleSubmit}
       onContinue={onDone}
       layout="stack"
