@@ -47,6 +47,10 @@ export default function TierSortBoard({
 
   const allPlaced = items.every((i) => placements[i.id]);
 
+  function labelColor(colorVar: string) {
+    return colorVar === "rock" ? "var(--rock-label)" : `var(--${colorVar})`;
+  }
+
   function placeIn(binKey: string) {
     if (!selected) return;
     setPlacements((p) => ({ ...p, [selected]: binKey }));
@@ -127,10 +131,10 @@ export default function TierSortBoard({
               <button
                 key={bin.key}
                 onClick={() => placeIn(bin.key)}
-                className={`bin p-3 min-h-[64px] w-full flex items-center gap-3 text-left ${selected ? "active" : ""}`}
+                className={`bin bin-${bin.colorVar} p-3 min-h-[64px] w-full flex items-center gap-3 text-left ${selected ? "active" : ""}`}
                 style={{ ["--bin-color" as string]: `var(--${bin.colorVar})` }}
               >
-                <p className="stencil text-xs shrink-0" style={{ color: `var(--${bin.colorVar})` }}>{bin.label}</p>
+                <p className="stencil text-xs shrink-0" style={{ color: labelColor(bin.colorVar) }}>{bin.label}</p>
                 <div className="flex flex-wrap gap-1 justify-end flex-1">
                   {placed.map((i) => (
                     <div
@@ -154,10 +158,10 @@ export default function TierSortBoard({
               <button
                 key={bin.key}
                 onClick={() => placeIn(bin.key)}
-                className={`bin p-3 min-h-[140px] text-left ${selected ? "active" : ""}`}
+                className={`bin bin-${bin.colorVar} p-3 min-h-[140px] text-left ${selected ? "active" : ""}`}
                 style={{ ["--bin-color" as string]: `var(--${bin.colorVar})` }}
               >
-                <p className="stencil text-xs mb-2" style={{ color: `var(--${bin.colorVar})` }}>{bin.label}</p>
+                <p className="stencil text-xs mb-2" style={{ color: labelColor(bin.colorVar) }}>{bin.label}</p>
                 <div className="space-y-1">
                   {placed.map((i) => (
                     <div

@@ -10,6 +10,7 @@
 
   --dirt: #8a6338;
   --rock: #8a8a86;
+  --rock-label: #c9c9c4;
   --gold: #d6ab3d;
   --nugget: #f4c542;
   --foolsgold: #9a8f4a;
@@ -24,6 +25,7 @@
   );
 
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  --grain-strong: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
 }
 
 @theme inline {
@@ -112,6 +114,51 @@ h1, h2, h3, .display {
 .bin.active {
   border-color: var(--bin-color, var(--gold));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--bin-color, var(--gold)) 25%, transparent);
+}
+
+/* Bin color variants: distinct texture per ore tier instead of a flat surface */
+.bin.bin-dirt {
+  background:
+    var(--grain-strong),
+    radial-gradient(ellipse at 20% 20%, #2a1f14 0%, #1a1108 100%);
+  background-blend-mode: overlay, normal;
+  background-size: 120px 120px, cover;
+}
+
+.bin.bin-rock {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.12) 0px,
+      rgba(0, 0, 0, 0.12) 1px,
+      transparent 1px,
+      transparent 16px
+    ),
+    linear-gradient(135deg, #3a3a38 0%, #262624 50%, #3a3a38 100%);
+}
+
+.bin.bin-gold {
+  background: linear-gradient(
+    135deg,
+    #8a6a1c 0%,
+    #d6ab3d 45%,
+    #f4dc8a 50%,
+    #d6ab3d 55%,
+    #8a6a1c 100%
+  );
+  background-size: 220% 220%;
+  animation: bin-gold-shimmer 5s ease-in-out infinite;
+}
+
+@keyframes bin-gold-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bin.bin-gold {
+    animation: none;
+  }
 }
 
 .depth-rail {
