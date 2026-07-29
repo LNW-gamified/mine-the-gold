@@ -15,6 +15,7 @@
   --nugget: #f4c542;
   --foolsgold: #9a8f4a;
   --wildcard: #a05a4a;
+  --rail-label: #cabca4;
 
   --strata: repeating-linear-gradient(
     180deg,
@@ -179,16 +180,31 @@ h1, h2, h3, .display {
 .depth-node {
   border: 2px solid var(--border);
   background: var(--surface);
+  color: var(--border);
   transition: all 0.2s ease;
 }
 .depth-node.active {
   border-color: var(--gold);
   background: var(--gold);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--gold) 60%, transparent);
+  color: var(--bg);
+  animation: rail-node-pulse 2s ease-in-out infinite;
 }
 .depth-node.done {
   border-color: var(--gold);
   background: var(--surface-raised);
+  color: var(--gold);
+}
+
+@keyframes rail-node-pulse {
+  0%, 100% { box-shadow: 0 0 14px color-mix(in srgb, var(--gold) 60%, transparent); }
+  50% { box-shadow: 0 0 14px color-mix(in srgb, var(--gold) 25%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .depth-node.active {
+    animation: none;
+    box-shadow: 0 0 14px color-mix(in srgb, var(--gold) 60%, transparent);
+  }
 }
 
 .btn {

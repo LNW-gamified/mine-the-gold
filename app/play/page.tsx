@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { Team } from "@/lib/types";
@@ -10,6 +10,63 @@ import Round2Tunnel from "@/components/rounds/Round2Tunnel";
 import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
 import Round5Bonus from "@/components/rounds/Round5Bonus";
+
+const ICON_PROPS = {
+  viewBox: "0 0 24 24",
+  width: 16,
+  height: 16,
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+function IconPickaxe() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M5 19 13 11" />
+      <path d="M11 5c2.8-1.6 6.2-1.2 8.4 1 2.2 2.2 2.6 5.6 1 8.4-2.8-.6-5.6-2-7.8-4.2S10.4 5.8 11 5Z" />
+    </svg>
+  );
+}
+
+function IconTunnel() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M4 20V11a8 8 0 0 1 16 0v9" />
+      <path d="M8 20v-5a4 4 0 0 1 8 0v5" />
+      <path d="M2 20h20" />
+    </svg>
+  );
+}
+
+function IconLantern() {
+  return (
+    <svg {...ICON_PROPS}>
+      <circle cx="10" cy="10" r="6" />
+      <path d="M14.5 14.5 20 20" />
+    </svg>
+  );
+}
+
+function IconGem() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M6 3h12l4 6-10 12L2 9Z" />
+      <path d="M2 9h20" />
+      <path d="M9 3l3 6 3-6" />
+    </svg>
+  );
+}
+
+const ROUND_ICONS: Record<number, () => ReactElement> = {
+  1: IconPickaxe,
+  2: IconTunnel,
+  3: IconLantern,
+  4: IconPickaxe,
+  5: IconGem,
+};
 
 export default function PlayPage() {
   const router = useRouter();
@@ -59,13 +116,30 @@ export default function PlayPage() {
 
   return (
     <main className="flex-1 flex strata">
-      <aside className="depth-rail w-16 sm:w-20 flex flex-col items-center py-6 gap-4">
-        {[1, 2, 3, 4, 5].map((r) => (
-          <div key={r} className="flex flex-col items-center gap-1">
-            <div className={`depth-node w-8 h-8 rounded-full ${round > r ? "done" : round === r ? "active" : ""}`} />
-            <span className="text-[9px] text-text-dim text-center leading-tight w-14">{ROUND_SHORT_NAMES[r]}</span>
-          </div>
-        ))}
+      <aside className="depth-rail w-16 sm:w-20 flex flex-col items-center py-6 gap-4 relative">
+        {/* Line spans icon-center to icon-center: top-10 = py-6 + half of the 32px node; height covers
+            the 4 gaps between the 5 nodes given the fixed 32px icon + 24px label row height. */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-10 w-[2px] h-[304px] flex flex-col" aria-hidden="true">
+          {[1, 2, 3, 4].map((seg) => (
+            <div key={seg} className="flex-1" style={{ background: round > seg ? "var(--gold)" : "var(--border)" }} />
+          ))}
+        </div>
+        {[1, 2, 3, 4, 5].map((r) => {
+          const Icon = ROUND_ICONS[r];
+          return (
+            <div key={r} className="relative flex flex-col items-center gap-1">
+              <div className={`depth-node w-8 h-8 rounded-full flex items-center justify-center ${round > r ? "done" : round === r ? "active" : ""}`}>
+                <Icon />
+              </div>
+              <span
+                className="text-[9px] leading-[10px] text-center w-14 h-6 flex items-center justify-center"
+                style={{ color: "var(--rail-label)" }}
+              >
+                {ROUND_SHORT_NAMES[r]}
+              </span>
+            </div>
+          );
+        })}
       </aside>
 
       <div className="flex-1 flex flex-col">
