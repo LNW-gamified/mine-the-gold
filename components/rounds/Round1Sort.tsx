@@ -9,14 +9,12 @@ const CODES = [
   "dirt_01", "dirt_02", "dirt_03", "dirt_04",
   "rock_01", "rock_02", "rock_03", "rock_04",
   "gold_01", "gold_02", "gold_03", "gold_04",
-  "nugget_01", "nugget_02", "nugget_03", "nugget_04",
 ];
 
 const BINS = [
   { key: "dirt", label: "Dirt", colorVar: "dirt" },
   { key: "rock", label: "Rock", colorVar: "rock" },
   { key: "gold", label: "Gold", colorVar: "gold" },
-  { key: "gold_nugget", label: "Gold Nugget", colorVar: "nugget" },
 ];
 
 export default function Round1Sort({
@@ -69,7 +67,7 @@ export default function Round1Sort({
     <TierSortBoard
       items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: c.category, points: c.points }))}
       bins={BINS}
-      instructions="Sixteen things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, all the way down to hard economic impact."
+      instructions="Twelve things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, business problem in the middle, real business consequence at the bottom."
       onSubmit={handleSubmit}
       onContinue={onDone}
       layout="stack"
