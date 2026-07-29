@@ -179,12 +179,12 @@ export default function TierSortBoard({
         {selected ? "Now tap a layer above to place it." : "Tap a statement, then tap the layer it belongs in."}
       </p>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className={layout === "stack" ? "grid grid-cols-2 gap-2 mb-6" : "flex flex-wrap gap-2 mb-6"}>
         {trayItems.map((item) => (
           <button
             key={item.id}
             onClick={() => pickUp(item.id)}
-            className="ore-card px-4 py-3 text-sm text-left max-w-xs"
+            className={`ore-card px-4 py-3 text-sm text-left ${layout === "stack" ? "" : "max-w-xs"}`}
             style={{
               outline: selected === item.id ? "2px solid var(--gold)" : "none",
               outlineOffset: "2px",
