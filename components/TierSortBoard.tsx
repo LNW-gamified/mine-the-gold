@@ -22,6 +22,16 @@ export interface SortResult {
   points: number;
 }
 
+function hashStringToRange(str: string, min: number, max: number): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  const normalized = (Math.abs(hash) % 1000) / 1000;
+  return min + normalized * (max - min);
+}
+
 export default function TierSortBoard({
   items,
   bins,
@@ -140,7 +150,7 @@ export default function TierSortBoard({
                     <div
                       key={i.id}
                       onClick={(e) => { e.stopPropagation(); unplace(i.id); }}
-                      className="text-xs bg-surface rounded px-2 py-1 border border-border"
+                      className="ore-card text-xs px-2 py-1"
                     >
                       {i.label}
                     </div>
@@ -167,7 +177,7 @@ export default function TierSortBoard({
                     <div
                       key={i.id}
                       onClick={(e) => { e.stopPropagation(); unplace(i.id); }}
-                      className="text-xs bg-surface rounded px-2 py-1 border border-border"
+                      className="ore-card text-xs px-2 py-1"
                     >
                       {i.label}
                     </div>
@@ -188,11 +198,8 @@ export default function TierSortBoard({
           <button
             key={item.id}
             onClick={() => pickUp(item.id)}
-            className={`ore-card px-4 py-3 text-sm text-left ${layout === "stack" ? "" : "max-w-xs"}`}
-            style={{
-              outline: selected === item.id ? "2px solid var(--gold)" : "none",
-              outlineOffset: "2px",
-            }}
+            className={`ore-card px-4 py-3 text-sm text-left ${layout === "stack" ? "" : "max-w-xs"} ${selected === item.id ? "selected" : ""}`}
+            style={{ ["--card-rotate" as string]: `${hashStringToRange(item.id, -1.5, 1.5)}deg` }}
           >
             {item.label}
           </button>
