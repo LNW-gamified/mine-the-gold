@@ -28,12 +28,14 @@ export default function TierSortBoard({
   instructions,
   onSubmit,
   onContinue,
+  layout = "grid",
 }: {
   items: SortItem[];
   bins: SortBin[];
   instructions?: string;
   onSubmit: (results: SortResult[], total: number) => Promise<void> | void;
   onContinue: () => void;
+  layout?: "grid" | "stack";
 }) {
   const [placements, setPlacements] = useState<Record<string, string | null>>(
     Object.fromEntries(items.map((i) => [i.id, null]))
@@ -117,32 +119,61 @@ export default function TierSortBoard({
     <div>
       {instructions && <p className="text-text-dim text-sm mb-6">{instructions}</p>}
 
-      <div className={`grid gap-3 mb-6`} style={{ gridTemplateColumns: `repeat(${Math.min(bins.length, 4)}, minmax(0, 1fr))` }}>
-        {bins.map((bin) => {
-          const placed = items.filter((i) => placements[i.id] === bin.key);
-          return (
-            <button
-              key={bin.key}
-              onClick={() => placeIn(bin.key)}
-              className={`bin p-3 min-h-[140px] text-left ${selected ? "active" : ""}`}
-              style={{ ["--bin-color" as string]: `var(--${bin.colorVar})` }}
-            >
-              <p className="stencil text-xs mb-2" style={{ color: `var(--${bin.colorVar})` }}>{bin.label}</p>
-              <div className="space-y-1">
-                {placed.map((i) => (
-                  <div
-                    key={i.id}
-                    onClick={(e) => { e.stopPropagation(); unplace(i.id); }}
-                    className="text-xs bg-surface rounded px-2 py-1 border border-border"
-                  >
-                    {i.label}
-                  </div>
-                ))}
-              </div>
-            </button>
-          );
-        })}
-      </div>
+      {layout === "stack" ? (
+        <div className="flex flex-col gap-3 mb-6">
+          {bins.map((bin) => {
+            const placed = items.filter((i) => placements[i.id] === bin.key);
+            return (
+              <button
+                key={bin.key}
+                onClick={() => placeIn(bin.key)}
+                className={`bin p-3 min-h-[64px] w-full flex items-center gap-3 text-left ${selected ? "active" : ""}`}
+                style={{ ["--bin-color" as string]: `var(--${bin.colorVar})` }}
+              >
+                <p className="stencil text-xs shrink-0" style={{ color: `var(--${bin.colorVar})` }}>{bin.label}</p>
+                <div className="flex flex-wrap gap-1 justify-end flex-1">
+                  {placed.map((i) => (
+                    <div
+                      key={i.id}
+                      onClick={(e) => { e.stopPropagation(); unplace(i.id); }}
+                      className="text-xs bg-surface rounded px-2 py-1 border border-border"
+                    >
+                      {i.label}
+                    </div>
+                  ))}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className={`grid gap-3 mb-6`} style={{ gridTemplateColumns: `repeat(${Math.min(bins.length, 4)}, minmax(0, 1fr))` }}>
+          {bins.map((bin) => {
+            const placed = items.filter((i) => placements[i.id] === bin.key);
+            return (
+              <button
+                key={bin.key}
+                onClick={() => placeIn(bin.key)}
+                className={`bin p-3 min-h-[140px] text-left ${selected ? "active" : ""}`}
+                style={{ ["--bin-color" as string]: `var(--${bin.colorVar})` }}
+              >
+                <p className="stencil text-xs mb-2" style={{ color: `var(--${bin.colorVar})` }}>{bin.label}</p>
+                <div className="space-y-1">
+                  {placed.map((i) => (
+                    <div
+                      key={i.id}
+                      onClick={(e) => { e.stopPropagation(); unplace(i.id); }}
+                      className="text-xs bg-surface rounded px-2 py-1 border border-border"
+                    >
+                      {i.label}
+                    </div>
+                  ))}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <p className="text-text-dim text-xs mb-2">
         {selected ? "Now tap a layer above to place it." : "Tap a statement, then tap the layer it belongs in."}

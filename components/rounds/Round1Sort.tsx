@@ -69,9 +69,10 @@ export default function Round1Sort({
     <TierSortBoard
       items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: c.category, points: c.points }))}
       bins={BINS}
-      instructions="Sixteen things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint, business problem, business consequence, or hard economic impact."
+      instructions="Sixteen things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, all the way down to hard economic impact."
       onSubmit={handleSubmit}
       onContinue={onDone}
+      layout="stack"
     />
   );
 }
