@@ -65,8 +65,8 @@ export interface Submission {
 export const ROUND_NAMES: Record<number, string> = {
   0: 'Ready to dig',
   1: 'Round 1: Sort the Mine',
-  2: 'Round 2: Build the Tunnel',
-  3: 'Round 3: Dig Deeper',
+  2: 'Round 2: Dig Deeper',
+  3: 'Round 3: Build the Tunnel',
   4: "Round 4: Fool's Gold",
   5: 'Game complete',
 };
@@ -74,8 +74,8 @@ export const ROUND_NAMES: Record<number, string> = {
 export const ROUND_SHORT_NAMES: Record<number, string> = {
   0: 'Start',
   1: 'Sort',
-  2: 'Tunnel',
-  3: 'Dig',
+  2: 'Dig',
+  3: 'Tunnel',
   4: "Fool's Gold",
   5: 'Done',
 };
