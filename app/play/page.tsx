@@ -9,7 +9,6 @@ import Round1Sort from "@/components/rounds/Round1Sort";
 import Round2Tunnel from "@/components/rounds/Round2Tunnel";
 import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
-import Round5Bonus from "@/components/rounds/Round5Bonus";
 
 // Set to false to lock rounds back to sequential progression for a real session.
 const DEV_MODE_FREE_NAV = true;
@@ -53,22 +52,11 @@ function IconLantern() {
   );
 }
 
-function IconGem() {
-  return (
-    <svg {...ICON_PROPS}>
-      <path d="M6 3h12l4 6-10 12L2 9Z" />
-      <path d="M2 9h20" />
-      <path d="M9 3l3 6 3-6" />
-    </svg>
-  );
-}
-
 const ROUND_ICONS: Record<number, () => ReactElement> = {
   1: IconPickaxe,
   2: IconTunnel,
   3: IconLantern,
   4: IconPickaxe,
-  5: IconGem,
 };
 
 export default function PlayPage() {
@@ -128,13 +116,13 @@ export default function PlayPage() {
     <main className="flex-1 flex strata">
       <aside className="depth-rail w-16 sm:w-20 flex flex-col items-center py-6 gap-4 relative">
         {/* Line spans icon-center to icon-center: top-10 = py-6 + half of the 32px node; height covers
-            the 4 gaps between the 5 nodes given the fixed 32px icon + 24px label row height. */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-10 w-[2px] h-[304px] flex flex-col" aria-hidden="true">
-          {[1, 2, 3, 4].map((seg) => (
+            the 3 gaps between the 4 nodes given the fixed 32px icon + 24px label row height. */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-10 w-[2px] h-[228px] flex flex-col" aria-hidden="true">
+          {[1, 2, 3].map((seg) => (
             <div key={seg} className="flex-1" style={{ background: round > seg ? "var(--gold)" : "var(--border)" }} />
           ))}
         </div>
-        {[1, 2, 3, 4, 5].map((r) => {
+        {[1, 2, 3, 4].map((r) => {
           const Icon = ROUND_ICONS[r];
           return (
             <div
@@ -173,7 +161,7 @@ export default function PlayPage() {
             <div className="text-center py-12">
               <h2 className="text-2xl font-bold mb-3">Ready to dig, {team.name}?</h2>
               <p className="text-text-dim mb-8">
-                Five rounds. Every one asks the same question: is this dirt, rock, gold, or a gold nugget?
+                Four rounds. Every one asks the same question: is this dirt, rock, gold, or a gold nugget?
                 Play at your own pace, no need to wait on anyone else.
               </p>
               <button className="btn btn-gold" onClick={advanceRound}>Start Round 1</button>
@@ -182,7 +170,7 @@ export default function PlayPage() {
                 <div className="mt-8 pt-6 border-t border-border">
                   <p className="text-xs text-text-dim uppercase tracking-widest mb-2">Dev: jump to round</p>
                   <div className="flex flex-wrap justify-center gap-2">
-                    {[1, 2, 3, 4, 5].map((r) => (
+                    {[1, 2, 3, 4].map((r) => (
                       <button key={r} className="btn btn-ghost text-xs" onClick={() => jumpToRound(r)}>
                         {r}. {ROUND_SHORT_NAMES[r]}
                       </button>
@@ -196,8 +184,7 @@ export default function PlayPage() {
           {round === 2 && <Round2Tunnel sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
           {round === 3 && <Round3DigDeeper sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
           {round === 4 && <Round4FoolsGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-          {round === 5 && <Round5Bonus sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-          {round >= 6 && (
+          {round >= 5 && (
             <div className="text-center py-12">
               <h2 className="text-3xl font-bold text-nugget mb-2 stencil">The dig is done</h2>
               <p className="text-text-dim mb-2">Final score: {team.score} points</p>
