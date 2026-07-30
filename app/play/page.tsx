@@ -11,6 +11,9 @@ import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
 import Round5Bonus from "@/components/rounds/Round5Bonus";
 
+// Set to false to lock rounds back to sequential progression for a real session.
+const DEV_MODE_FREE_NAV = true;
+
 const ICON_PROPS = {
   viewBox: "0 0 24 24",
   width: 16,
@@ -108,6 +111,13 @@ export default function PlayPage() {
     if (data) setTeam(data);
   }
 
+  async function jumpToRound(r: number) {
+    if (!DEV_MODE_FREE_NAV) return;
+    if (!teamId) return;
+    const { data } = await supabase.from("teams").update({ current_round: r }).eq("id", teamId).select("*").single();
+    if (data) setTeam(data);
+  }
+
   if (!sessionId || !teamId || !team) {
     return <main className="flex-1 flex items-center justify-center text-text-dim">Loading...</main>;
   }
@@ -127,7 +137,11 @@ export default function PlayPage() {
         {[1, 2, 3, 4, 5].map((r) => {
           const Icon = ROUND_ICONS[r];
           return (
-            <div key={r} className="relative flex flex-col items-center gap-1">
+            <div
+              key={r}
+              className={`relative flex flex-col items-center gap-1 ${DEV_MODE_FREE_NAV ? "cursor-pointer" : ""}`}
+              onClick={DEV_MODE_FREE_NAV ? () => jumpToRound(r) : undefined}
+            >
               <div className={`depth-node w-8 h-8 rounded-full flex items-center justify-center ${round > r ? "done" : round === r ? "active" : ""}`}>
                 <Icon />
               </div>
@@ -163,6 +177,19 @@ export default function PlayPage() {
                 Play at your own pace, no need to wait on anyone else.
               </p>
               <button className="btn btn-gold" onClick={advanceRound}>Start Round 1</button>
+
+              {DEV_MODE_FREE_NAV && (
+                <div className="mt-8 pt-6 border-t border-border">
+                  <p className="text-xs text-text-dim uppercase tracking-widest mb-2">Dev: jump to round</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {[1, 2, 3, 4, 5].map((r) => (
+                      <button key={r} className="btn btn-ghost text-xs" onClick={() => jumpToRound(r)}>
+                        {r}. {ROUND_SHORT_NAMES[r]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {round === 1 && <Round1Sort sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
