@@ -378,6 +378,18 @@ h1, h2, h3, .display {
 .node-label {
   margin-top: 8px; font-family: var(--font-oswald), 'Oswald', sans-serif; font-size: 10px;
   line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; color: #b8a988;
+  /* The track/fill run continuously from the first node's center to the last,
+     which means the line passes directly behind every label in between (both
+     sit horizontally centered in the same 90px rail). node-wrap's z-index: 2
+     keeps the label above the line so the text itself is never hidden, but
+     without its own backdrop the bright gold fill visibly cuts across the
+     characters. This opaque patch (same gradient as .rail's own background)
+     breaks the line at each label instead. */
+  position: relative;
+  z-index: 3;
+  padding: 1px 4px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #120d08, #090705);
 }
 .node-wrap:has(.node.active) .node-label { color: #fff2c4; }
 .node-wrap:has(.node.done) .node-label { color: #e8b13d; }
