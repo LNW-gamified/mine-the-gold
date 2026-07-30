@@ -60,9 +60,9 @@ function IconDiamond() {
 }
 
 const ROUND_ICONS: Record<number, () => ReactElement> = {
-  1: IconMagnifier,
-  2: IconShovel,
-  3: IconTunnel,
+  1: IconShovel,
+  2: IconTunnel,
+  3: IconMagnifier,
   4: IconDiamond,
 };
 
@@ -205,9 +205,9 @@ export default function PlayPage() {
                     )}
                   </div>
                 )}
-                {round === 1 && <Round3DigDeeper sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-                {round === 2 && <Round1Sort sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-                {round === 3 && <Round2Tunnel sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
+                {round === 1 && <Round1Sort sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
+                {round === 2 && <Round2Tunnel sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
+                {round === 3 && <Round3DigDeeper sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
                 {round === 4 && <Round4FoolsGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
                 {round >= 5 && (
                   <div className="text-center py-12">
