@@ -41,10 +41,10 @@ export default function Round2Tunnel({
   if (!scenario) return <p className="text-text-dim">Loading tunnel...</p>;
 
   const items = [
-    { id: "dirt", label: scenario.dirt_text, correctBin: "p1", points: 2 },
-    { id: "rock", label: scenario.rock_text, correctBin: "p2", points: 2 },
-    { id: "gold", label: scenario.gold_text, correctBin: "p3", points: 3 },
-    { id: "nugget", label: scenario.nugget_text, correctBin: "p4", points: 3 },
+    { id: "dirt", label: scenario.dirt_text, correctBin: "p1", points: 2, explanation: scenario.dirt_explanation ?? undefined },
+    { id: "rock", label: scenario.rock_text, correctBin: "p2", points: 2, explanation: scenario.rock_explanation ?? undefined },
+    { id: "gold", label: scenario.gold_text, correctBin: "p3", points: 3, explanation: scenario.gold_explanation ?? undefined },
+    { id: "nugget", label: scenario.nugget_text, correctBin: "p4", points: 3, explanation: scenario.nugget_explanation ?? undefined },
   ];
 
   async function handleSubmit(results: SortResult[], total: number) {

@@ -6,6 +6,7 @@ export interface Card {
   category: Category;
   text: string;
   points: number;
+  explanation: string | null;
 }
 
 export interface MineShaftScenario {
@@ -15,6 +16,10 @@ export interface MineShaftScenario {
   rock_text: string;
   gold_text: string;
   nugget_text: string;
+  dirt_explanation: string | null;
+  rock_explanation: string | null;
+  gold_explanation: string | null;
+  nugget_explanation: string | null;
 }
 
 export interface Session {
@@ -40,6 +45,7 @@ export interface DigDeeperPrompt {
   tier: 'level2' | 'level3' | 'impact';
   question_text: string;
   points: number;
+  explanation: string | null;
 }
 
 export interface Submission {

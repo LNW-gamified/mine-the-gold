@@ -7,6 +7,7 @@ export interface SortItem {
   label: string;
   correctBin: string;
   points: number;
+  explanation?: string;
 }
 
 export interface SortBin {
@@ -139,6 +140,11 @@ export default function TierSortBoard({
                     )}
                     {" "}&middot; {r.points} pts
                   </p>
+                  {!r.correct && item.explanation && (
+                    <p className="text-xs text-text-dim italic mt-2 pt-2 border-t border-border">
+                      {item.explanation}
+                    </p>
+                  )}
                 </div>
               </div>
             );

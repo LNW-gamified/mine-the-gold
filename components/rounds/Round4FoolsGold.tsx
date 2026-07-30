@@ -60,7 +60,7 @@ export default function Round4FoolsGold({
 
   return (
     <TierSortBoard
-      items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: c.category === "gold" ? "gold" : "foolsgold", points: 2 }))}
+      items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: c.category === "gold" ? "gold" : "foolsgold", points: 2, explanation: c.explanation ?? undefined }))}
       bins={BINS}
       instructions="Not everything that sounds valuable is gold. If a rep can't answer &ldquo;why does that matter?&rdquo; about a statement, it's fool's gold. Sort each one."
       onSubmit={handleSubmit}

@@ -67,7 +67,7 @@ export default function Round3DigDeeper({
         <p className="text-xl">&ldquo;{dirtCard.text}&rdquo;</p>
       </div>
       <TierSortBoard
-        items={prompts.map((p) => ({ id: p.id, label: p.question_text, correctBin: p.tier, points: p.points }))}
+        items={prompts.map((p) => ({ id: p.id, label: p.question_text, correctBin: p.tier, points: p.points, explanation: p.explanation ?? undefined }))}
         bins={BINS}
         instructions="Three follow-up questions a rep might ask next. Sort them by how deep each one actually goes."
         onSubmit={handleSubmit}
