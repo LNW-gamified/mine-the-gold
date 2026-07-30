@@ -62,6 +62,10 @@ export interface Submission {
   created_at: string;
 }
 
+// Sum of every round's maximum possible points: 39 (Round 1) + 12 (Round 2,
+// including the perfect-tunnel bonus) + 17 (Round 3) + 16 (Round 4) = 84.
+export const MAX_POSSIBLE_SCORE = 84;
+
 export const ROUND_NAMES: Record<number, string> = {
   0: 'Ready to dig',
   1: 'Round 1: Sort the Mine',

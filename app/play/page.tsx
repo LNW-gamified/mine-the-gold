@@ -10,9 +10,41 @@ import Round2Tunnel from "@/components/rounds/Round2Tunnel";
 import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
 import CaveBackground from "@/components/CaveBackground";
+import CartBody from "@/components/MineCart";
 
 // Set to false to lock rounds back to sequential progression for a real session.
 const DEV_MODE_FREE_NAV = true;
+
+// Purely celebratory: always ends up full and overflowing regardless of the
+// team's actual score, so the count/positions here are fixed, not derived
+// from points. Delays are staggered ~130ms apart per nugget.
+const CELEBRATION_NUGGETS = [
+  { cx: 11, cy: 13, r: 2.5, fill: "#fff2c4", delay: 0 },
+  { cx: 17, cy: 7, r: 3, fill: "#e8b13d", delay: 130 },
+  { cx: 23, cy: 4, r: 2.5, fill: "#fff2c4", delay: 260 },
+  { cx: 29, cy: 6, r: 3, fill: "#e8b13d", delay: 390 },
+  { cx: 34, cy: 12, r: 2, fill: "#fff2c4", delay: 520 },
+  { cx: 20, cy: 13, r: 2.5, fill: "#e8b13d", delay: 650 },
+];
+
+function CelebrationCart() {
+  return (
+    <svg viewBox="0 0 46 30" width={230} height={150} className="mx-auto">
+      <CartBody />
+      {CELEBRATION_NUGGETS.map((n, i) => (
+        <circle
+          key={i}
+          className="cart-nugget"
+          cx={n.cx}
+          cy={n.cy}
+          r={n.r}
+          fill={n.fill}
+          style={{ animationDelay: `${n.delay}ms` }}
+        />
+      ))}
+    </svg>
+  );
+}
 
 const ICON_PROPS = {
   viewBox: "0 0 24 24",
@@ -211,7 +243,8 @@ export default function PlayPage() {
                 {round === 4 && <Round4FoolsGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
                 {round >= 5 && (
                   <div className="text-center py-12">
-                    <h2 className="text-3xl font-bold text-nugget mb-2 stencil">The dig is done</h2>
+                    <CelebrationCart />
+                    <h2 className="text-3xl font-bold text-nugget mb-2 stencil mt-6">The dig is done</h2>
                     <p className="text-text-dim mb-2">Final score: {team.score} points</p>
                     <p className="text-text-dim text-sm">Check the facilitator&apos;s screen for how your team stacked up.</p>
                   </div>

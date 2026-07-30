@@ -3,13 +3,38 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Session, Team } from "@/lib/types";
-import { ROUND_NAMES } from "@/lib/types";
+import { MAX_POSSIBLE_SCORE } from "@/lib/types";
+import CartBody from "@/components/MineCart";
 
 function makeRoomCode() {
   const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
   for (let i = 0; i < 6; i++) code += letters[Math.floor(Math.random() * letters.length)];
   return code;
+}
+
+// Nugget decoration tiers copied from leaderboard-race.html's three example
+// carts (1st place = 3 nuggets, 2nd = 1, 3rd = 0), applied by rank rather
+// than a score formula since the mockup only defines these three states.
+const CART_NUGGETS: Record<"full" | "medium" | "empty", { cx: number; cy: number; r: number; fill: string }[]> = {
+  full: [
+    { cx: 14, cy: 12, r: 2.5, fill: "#fff2c4" },
+    { cx: 22, cy: 10, r: 3, fill: "#e8b13d" },
+    { cx: 29, cy: 13, r: 2, fill: "#fff2c4" },
+  ],
+  medium: [{ cx: 18, cy: 11, r: 2.5, fill: "#e8b13d" }],
+  empty: [],
+};
+
+function CartSvg({ tier }: { tier: "full" | "medium" | "empty" }) {
+  return (
+    <svg viewBox="0 0 46 30">
+      <CartBody />
+      {CART_NUGGETS[tier].map((n, i) => (
+        <circle key={i} cx={n.cx} cy={n.cy} r={n.r} fill={n.fill} />
+      ))}
+    </svg>
+  );
 }
 
 export default function FacilitatorPage() {
@@ -143,21 +168,29 @@ export default function FacilitatorPage() {
         <section className="ore-card-subtle p-6" style={{ borderTopColor: "var(--nugget)" }}>
           <h2 className="font-bold mb-4 stencil text-sm">Live leaderboard</h2>
           {teams.length === 0 && <p className="text-text-dim text-sm">No teams have joined yet. Share the room code above.</p>}
-          <ol className="space-y-3">
-            {teams.map((t, i) => (
-              <li
-                key={t.id}
-                className={`flex justify-between items-center pb-2 ${i === 0 ? "rounded px-3 py-2 -mx-3" : "border-b border-border"}`}
-                style={i === 0 ? { background: "color-mix(in srgb, var(--gold) 8%, var(--surface-raised))" } : undefined}
-              >
-                <div>
-                  <p className="text-sm font-bold">{i + 1}. {t.name}</p>
-                  <p className="text-xs text-text-dim">{ROUND_NAMES[t.current_round]}</p>
+          {teams.map((t, i) => {
+            const pos = Math.min((t.score / MAX_POSSIBLE_SCORE) * 100, 100);
+            const tier = i === 0 ? "full" : i === 1 ? "medium" : "empty";
+            return (
+              <div key={t.id} className={`lane ${i === 0 ? "first" : ""}`}>
+                <div className="lane-head">
+                  <span className="lane-name">
+                    <span className="lane-rank">{i + 1}.</span>
+                    {t.name}
+                  </span>
+                  <span className="lane-score">{t.score}</span>
                 </div>
-                <span className="text-gold font-bold text-lg">{t.score}</span>
-              </li>
-            ))}
-          </ol>
+                <div className="track">
+                  <div className="rail-ties" />
+                  <div className="finish" />
+                  <div className="cart" style={{ left: `calc(${pos}% - 46px)` }}>
+                    {i === 0 && <div className="lead-tag">Leading</div>}
+                    <CartSvg tier={tier} />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </section>
       </div>
     </main>

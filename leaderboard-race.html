@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Leaderboard cart race mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Oswald:wght@500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0906; --ink: #f0e6d2; --ink-dim: #b8a988;
+    --gold: #e8b13d; --gold-hi: #fff2c4; --gold-dark: #7a5510;
+    --track: #241a10; --track-line: #3a2c18;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Barlow',sans-serif; padding:40px; }
+  h1 { font-family:'Rye'; font-weight:400; font-size:26px; color:var(--gold-hi); margin:0 0 24px; }
+
+  .board {
+    max-width: 760px;
+    background: linear-gradient(160deg, #171008 0%, #0d0906 100%);
+    border: 1px solid var(--track-line);
+    border-radius: 10px;
+    padding: 26px 30px;
+  }
+
+  .lane { margin-bottom: 26px; }
+  .lane-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 8px; }
+  .lane-name { font-family:'Oswald'; font-weight:600; font-size:14px; letter-spacing:0.05em; }
+  .lane-rank { color: var(--gold-hi); font-family:'Oswald'; font-weight:700; margin-right:8px; }
+  .lane-score { font-family:'Oswald'; font-weight:700; font-size:16px; color: var(--gold-hi); }
+
+  .track {
+    position: relative;
+    height: 34px;
+    background: repeating-linear-gradient(90deg, var(--track) 0 18px, #1a130b 18px 20px);
+    border-radius: 4px;
+    border: 1px solid var(--track-line);
+    overflow: visible;
+  }
+  .rail-ties {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(90deg, transparent 0 26px, rgba(0,0,0,0.35) 26px 30px);
+  }
+
+  .cart {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    width: 46px; height: 30px;
+  }
+  .cart svg { width: 100%; height: 100%; }
+
+  .finish {
+    position: absolute; right: -2px; top: -6px; bottom: -6px;
+    width: 3px;
+    background: repeating-linear-gradient(180deg, var(--gold-hi) 0 6px, #1a130b 6px 12px);
+  }
+
+  .lead-tag {
+    position: absolute; top: -22px; left: 0;
+    font-family:'Oswald'; font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+    color: var(--gold-hi); background: var(--gold-dark); padding: 2px 8px; border-radius: 3px;
+    opacity: 0;
+  }
+  .lane.first .lead-tag { opacity: 1; }
+</style>
+</head>
+<body>
+
+<h1>Live leaderboard</h1>
+
+<div class="board">
+
+  <div class="lane first" style="--pos: 82%;">
+    <div class="lane-head">
+      <span class="lane-name"><span class="lane-rank">1.</span>Deep Diggers</span>
+      <span class="lane-score">41</span>
+    </div>
+    <div class="track">
+      <div class="rail-ties"></div>
+      <div class="finish"></div>
+      <div class="cart" style="left: calc(82% - 46px);">
+        <div class="lead-tag">Leading</div>
+        <svg viewBox="0 0 46 30">
+          <rect x="4" y="6" width="34" height="16" rx="2" fill="#3a2a14" stroke="#5a4022" stroke-width="1.5"/>
+          <path d="M6,6 L10,0 L34,0 L38,6 Z" fill="#4a3418"/>
+          <circle cx="12" cy="24" r="5" fill="#0e0a05" stroke="#2a2015" stroke-width="1.5"/>
+          <circle cx="32" cy="24" r="5" fill="#0e0a05" stroke="#2a2015" stroke-width="1.5"/>
+          <circle cx="14" cy="12" r="2.5" fill="var(--gold-hi)"/>
+          <circle cx="22" cy="10" r="3" fill="var(--gold)"/>
+          <circle cx="29" cy="13" r="2" fill="var(--gold-hi)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="lane" style="--pos: 55%;">
+    <div class="lane-head">
+      <span class="lane-name"><span class="lane-rank">2.</span>Ore Crushers</span>
+      <span class="lane-score">27</span>
+    </div>
+    <div class="track">
+      <div class="rail-ties"></div>
+      <div class="finish"></div>
+      <div class="cart" style="left: calc(55% - 46px);">
+        <svg viewBox="0 0 46 30">
+          <rect x="4" y="6" width="34" height="16" rx="2" fill="#3a2a14" stroke="#5a4022" stroke-width="1.5"/>
+          <path d="M6,6 L10,0 L34,0 L38,6 Z" fill="#4a3418"/>
+          <circle cx="12" cy="24" r="5" fill="#0e0a05" stroke="#2a2015" stroke-width="1.5"/>
+          <circle cx="32" cy="24" r="5" fill="#0e0a05" stroke="#2a2015" stroke-width="1.5"/>
+          <circle cx="18" cy="11" r="2.5" fill="var(--gold)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="lane" style="--pos: 30%;">
+    <div class="lane-head">
+      <span class="lane-name"><span class="lane-rank">3.</span>Pickaxe Pros</span>
+      <span class="lane-score">14</span>
+    </div>
+    <div class="track">
+      <div class="rail-ties"></div>
+      <div class="finish"></div>
+      <div class="cart" style="left: calc(30% - 46px);">
+        <svg viewBox="0 0 46 30">
+          <rect x="4" y="6" width="34" height="16" rx="2" fill="#3a2a14" stroke="#5a4022" stroke-width="1.5"/>
+          <path d="M6,6 L10,0 L34,0 L38,6 Z" fill="#4a3418"/>
+          <circle cx="12" cy="24" r="5" fill="#0e0a05" stroke="#2a2015" stroke-width="1.5"/>
+          <circle cx="32" cy="24" r="5" fill="#0e0a05" stroke="#2a2015" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
