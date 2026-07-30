@@ -9,6 +9,7 @@ import Round1Sort from "@/components/rounds/Round1Sort";
 import Round2Tunnel from "@/components/rounds/Round2Tunnel";
 import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
+import CaveBackground from "@/components/CaveBackground";
 
 // Set to false to lock rounds back to sequential progression for a real session.
 const DEV_MODE_FREE_NAV = true;
@@ -107,13 +108,20 @@ export default function PlayPage() {
   }
 
   if (!sessionId || !teamId || !team) {
-    return <main className="flex-1 flex items-center justify-center text-text-dim">Loading...</main>;
+    return (
+      <>
+        <CaveBackground />
+        <main className="flex-1 flex items-center justify-center text-text-dim relative z-10">Loading...</main>
+      </>
+    );
   }
 
   const round = team.current_round;
 
   return (
-    <main className="flex-1 flex strata">
+    <>
+      <CaveBackground />
+      <main className="flex-1 flex relative z-10">
       <aside className="depth-rail w-16 sm:w-20 flex flex-col items-center py-6 gap-4 relative">
         {/* Line spans icon-center to icon-center: top-10 = py-6 + half of the 32px node; height covers
             the 3 gaps between the 4 nodes given the fixed 32px icon + 24px label row height. */}
@@ -193,6 +201,7 @@ export default function PlayPage() {
           )}
         </div>
       </div>
-    </main>
+      </main>
+    </>
   );
 }

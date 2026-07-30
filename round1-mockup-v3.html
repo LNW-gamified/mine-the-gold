@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mine the Gold — Round 1 mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0906;
+    --dirt: #7a5230;
+    --dirt-dark: #3a2513;
+    --rock: #6b6f76;
+    --rock-dark: #2c2f33;
+    --gold: #e8b13d;
+    --gold-hi: #fff2c4;
+    --gold-dark: #7a5510;
+    --ink: #f0e6d2;
+    --ink-dim: #b8a988;
+    --frame: #2a2016;
+    --frame-hi: #4a3a24;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    padding: 64px 5vw;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .scene svg { width: 100%; height: 100%; }
+  .vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 65% at 50% 45%, transparent 40%, rgba(0,0,0,0.75) 100%);
+  }
+
+  .mote {
+    position: fixed;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--gold-hi);
+    box-shadow: 0 0 6px 1px rgba(232,177,61,0.8);
+    z-index: 1;
+    animation: drift 14s ease-in-out infinite;
+    opacity: 0;
+  }
+  @keyframes drift {
+    0% { opacity: 0; transform: translateY(0) translateX(0); }
+    15% { opacity: 0.8; }
+    85% { opacity: 0.5; }
+    100% { opacity: 0; transform: translateY(-90px) translateX(20px); }
+  }
+
+  .frame { position: relative; z-index: 2; }
+  .frame {
+    max-width: 1100px;
+    margin: 0 auto;
+    background:
+      repeating-linear-gradient(180deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 26px),
+      linear-gradient(180deg, #15100a 0%, #0d0a06 100%);
+    border: 3px solid var(--frame-hi);
+    border-radius: 6px;
+    box-shadow:
+      0 0 0 8px var(--frame),
+      0 0 0 9px #000,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 2px 0 rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .bolt {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d9c288, #7a6633 60%, #3d3316 100%);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .bolt.tl { top: 10px; left: 10px; } .bolt.tr { top: 10px; right: 10px; }
+  .bolt.bl { bottom: 10px; left: 10px; } .bolt.br { bottom: 10px; right: 10px; }
+
+  .layout { display: flex; }
+
+  /* ---- Depth rail ---- */
+  .rail {
+    width: 90px;
+    padding: 26px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    background: linear-gradient(180deg, #120d08, #090705);
+    border-right: 2px solid #000;
+  }
+  .rail-track {
+    position: absolute;
+    top: 60px; bottom: 60px; left: 50%;
+    width: 4px;
+    margin-left: -2px;
+    background: repeating-linear-gradient(180deg, #3a2f1e 0 10px, #1a140c 10px 20px);
+    border-radius: 2px;
+    z-index: 0;
+  }
+  .rail-track-fill {
+    position: absolute;
+    top: 60px; left: 50%;
+    width: 4px;
+    margin-left: -2px;
+    background: linear-gradient(180deg, var(--gold-hi), var(--gold));
+    border-radius: 2px;
+    z-index: 1;
+    box-shadow: 0 0 8px rgba(232,177,61,0.7);
+  }
+  .node-wrap {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+    margin-bottom: 44px;
+  }
+  .node {
+    width: 46px; height: 46px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 35% 30%, #2c2314, #14100a);
+    border: 2px solid #3d3020;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.6);
+  }
+  .node.active {
+    background: radial-gradient(circle at 35% 30%, var(--gold-hi), var(--gold) 60%, var(--gold-dark) 100%);
+    border-color: var(--gold-hi);
+    box-shadow: 0 0 0 4px rgba(232,177,61,0.18), 0 0 18px rgba(232,177,61,0.6);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 4px rgba(232,177,61,0.18), 0 0 14px rgba(232,177,61,0.5); }
+    50% { box-shadow: 0 0 0 7px rgba(232,177,61,0.1), 0 0 26px rgba(232,177,61,0.85); }
+  }
+  .node svg { width: 22px; height: 22px; }
+  .node.active svg { stroke: #2a1c05; }
+  .node svg { stroke: #7a6a4d; fill: none; stroke-width: 1.8; }
+  .node-label {
+    margin-top: 8px; font-family: 'Oswald', sans-serif; font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .node.active ~ .node-label, .node-wrap:has(.node.active) .node-label { color: var(--gold-hi); }
+
+  /* ---- Main ---- */
+  .main { flex: 1; padding: 30px 44px 40px; }
+
+  .plaque {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding-bottom: 18px; margin-bottom: 26px;
+    border-bottom: 2px solid #3a2f1e;
+    position: relative;
+  }
+  .kicker { font-family: 'Oswald', sans-serif; font-size: 12px; letter-spacing: 0.25em;
+    color: var(--ink-dim); text-transform: uppercase; margin: 0 0 4px; }
+  h1 {
+    font-family: 'Rye', serif; font-weight: 400; font-size: 34px; margin: 0;
+    color: var(--gold-hi);
+    text-shadow: 0 2px 0 #3a2400, 0 0 22px rgba(232,177,61,0.35);
+    letter-spacing: 0.01em;
+  }
+  .score-plate {
+    background: linear-gradient(155deg, #3a2f1e, #1c150c);
+    border: 1px solid #55442a;
+    border-radius: 8px;
+    padding: 8px 18px;
+    text-align: center;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 10px rgba(0,0,0,0.5);
+  }
+  .score-plate .lbl { font-family: 'Oswald'; font-size: 10px; letter-spacing: 0.2em; color: var(--ink-dim); }
+  .score-plate .val { font-family: 'Oswald'; font-weight: 700; font-size: 26px; color: var(--gold-hi); line-height: 1; }
+
+  .instructions { color: var(--ink-dim); font-size: 15px; line-height: 1.6; max-width: 640px; margin-bottom: 24px; }
+
+  .bin {
+    position: relative;
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; margin-bottom: 14px;
+    border-radius: 8px;
+    min-height: 30px;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.4);
+  }
+  .bin-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.25);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+  .bin-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 1.8; }
+  .bin-label { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; }
+
+  .bin-dirt {
+    background: linear-gradient(160deg, #4a3218 0%, #2a1c0d 100%);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.04);
+  }
+  .bin-dirt .bin-label { color: #d7a869; }
+  .bin-dirt .bin-icon svg { stroke: #d7a869; }
+
+  .bin-rock {
+    background: linear-gradient(160deg, #52565c 0%, #2b2d31 100%);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.05);
+  }
+  .bin-rock .bin-label { color: #cfd2d6; }
+  .bin-rock .bin-icon svg { stroke: #cfd2d6; }
+
+  .bin-gold {
+    background: linear-gradient(160deg, var(--gold-hi) 0%, var(--gold) 45%, var(--gold-dark) 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 14px rgba(232,177,61,0.25);
+    border-color: #a67a1a;
+  }
+  .bin-gold .bin-label { color: #4a3208; }
+  .bin-gold .bin-icon { background: rgba(0,0,0,0.15); }
+  .bin-gold .bin-icon svg { stroke: #4a3208; }
+
+  .hint { font-size: 13px; color: var(--ink-dim); margin: 22px 0 14px; font-style: italic; }
+
+  .tray { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; margin-bottom: 30px; }
+  .card {
+    position: relative;
+    padding: 16px 18px;
+    font-size: 14.5px;
+    line-height: 1.4;
+    color: var(--ink);
+    background: linear-gradient(160deg, #241a10 0%, #171008 100%);
+    clip-path: polygon(3% 12%, 16% 0%, 84% 2%, 98% 14%, 100% 82%, 88% 100%, 12% 98%, 0% 86%);
+    box-shadow: 4px 5px 0 rgba(0,0,0,0.45), 0 8px 18px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+    border: 1px solid #3a2c18;
+  }
+  .card:nth-child(odd) { transform: rotate(-1.1deg); }
+  .card:nth-child(even) { transform: rotate(0.9deg); }
+  .card:hover {
+    transform: translateY(-3px) rotate(0deg);
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(232,177,61,0.4), 4px 5px 0 rgba(0,0,0,0.45);
+  }
+
+  .cta-row { text-align: center; }
+  .btn {
+    font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 40px;
+    border-radius: 6px;
+    border: none;
+    background: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold) 55%, var(--gold-dark) 100%);
+    color: #3a2400;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -3px 0 rgba(0,0,0,0.25), 4px 4px 0 rgba(0,0,0,0.4);
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="torchL" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#e8b13d" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#e8b13d" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="rockFace" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#241c12"/>
+        <stop offset="100%" stop-color="#0b0906"/>
+      </linearGradient>
+    </defs>
+
+    <rect width="1600" height="1000" fill="#0b0906"/>
+
+    <!-- torch glow pools -->
+    <circle cx="220" cy="260" r="280" fill="url(#torchL)"/>
+    <circle cx="1400" cy="640" r="320" fill="url(#torchL)"/>
+    <circle cx="800" cy="60" r="240" fill="url(#torchL)"/>
+
+    <!-- far background cave wall, faint, sets depth -->
+    <path d="M0,1000 L0,300
+      C 120,220 260,260 340,180
+      C 460,80 600,120 760,60
+      C 940,0 1100,40 1260,10
+      C 1400,-10 1520,60 1600,40
+      L1600,1000 Z" fill="#140f0a" opacity="0.55"/>
+
+    <!-- left cave wall, organic and rounded, closer / darker -->
+    <path d="M0,0 L260,0
+      C 210,90 250,170 180,250
+      C 110,330 200,420 140,510
+      C 90,590 190,660 120,760
+      C 70,840 160,920 90,1000
+      L0,1000 Z" fill="url(#rockFace)"/>
+
+    <!-- right cave wall, mirrored -->
+    <path d="M1600,0 L1340,0
+      C 1390,100 1350,190 1420,270
+      C 1490,350 1400,440 1460,530
+      C 1510,610 1420,690 1490,780
+      C 1540,850 1450,930 1520,1000
+      L1600,1000 Z" fill="url(#rockFace)"/>
+
+    <!-- ceiling, low and rounded like a real cave mouth, curving down at the sides -->
+    <path d="M0,0 L1600,0 L1600,150
+      C 1420,60 1300,180 1150,90
+      C 1020,15 900,110 760,50
+      C 630,-5 500,90 380,40
+      C 260,-5 150,110 0,60 Z" fill="url(#rockFace)"/>
+
+    <!-- stalactites hanging from the ceiling -->
+    <g fill="#0e0a05">
+      <path d="M260,150 C 250,190 270,230 265,270 C 280,235 285,190 260,150 Z"/>
+      <path d="M420,80 C 405,140 435,190 425,240 C 448,195 452,130 420,80 Z"/>
+      <path d="M980,90 C 965,150 995,210 985,260 C 1010,215 1015,145 980,90 Z"/>
+      <path d="M1180,140 C 1168,175 1190,215 1182,250 C 1202,215 1206,175 1180,140 Z"/>
+    </g>
+
+    <!-- stalagmites rising near the edges, kept clear of center -->
+    <g fill="#0e0a05">
+      <path d="M110,1000 C 100,950 130,910 118,860 C 150,905 160,960 110,1000 Z"/>
+      <path d="M1510,1000 C 1522,940 1490,900 1505,850 C 1470,900 1460,960 1510,1000 Z"/>
+    </g>
+
+    <!-- support beam -->
+    <rect x="150" y="0" width="26" height="180" fill="#2a1c0f"/>
+    <rect x="1400" y="0" width="26" height="150" fill="#2a1c0f"/>
+    <rect x="115" y="150" width="96" height="20" fill="#2a1c0f"/>
+    <rect x="1365" y="120" width="96" height="20" fill="#2a1c0f"/>
+
+    <!-- rail track leading toward the frame -->
+    <path d="M600,1000 L680,760 M1000,1000 L920,760" stroke="#2a2013" stroke-width="10" stroke-linecap="round"/>
+    <g stroke="#1c1509" stroke-width="8">
+      <line x1="612" y1="960" x2="988" y2="960"/>
+      <line x1="632" y1="900" x2="968" y2="900"/>
+      <line x1="652" y1="840" x2="948" y2="840"/>
+      <line x1="670" y1="790" x2="930" y2="790"/>
+    </g>
+
+    <!-- distant cart, faint -->
+    <g opacity="0.5" transform="translate(1420,780)">
+      <rect x="0" y="0" width="70" height="38" rx="4" fill="#1c140b"/>
+      <circle cx="14" cy="42" r="9" fill="#0e0a05"/>
+      <circle cx="56" cy="42" r="9" fill="#0e0a05"/>
+    </g>
+  </svg>
+  <div class="vignette"></div>
+</div>
+
+<div class="mote" style="left:12%; top:70%; animation-delay:0s;"></div>
+<div class="mote" style="left:18%; top:55%; animation-delay:3s;"></div>
+<div class="mote" style="left:85%; top:65%; animation-delay:6s;"></div>
+<div class="mote" style="left:80%; top:40%; animation-delay:2s;"></div>
+<div class="mote" style="left:50%; top:8%; animation-delay:8s;"></div>
+<div class="mote" style="left:30%; top:20%; animation-delay:5s;"></div>
+
+<div class="frame">
+  <div class="bolt tl"></div><div class="bolt tr"></div>
+  <div class="bolt bl"></div><div class="bolt br"></div>
+
+  <div class="layout">
+    <div class="rail">
+      <div class="rail-track"></div>
+      <div class="rail-track-fill" style="height: 0px;"></div>
+
+      <div class="node-wrap">
+        <div class="node active"><svg viewBox="0 0 24 24"><path d="M12 3 L12 15 M7 9 L12 3 L17 9" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 15 h12 l-1.5 6 h-9 z"/></svg></div>
+        <div class="node-label" style="color:var(--gold-hi)">Dirt</div>
+      </div>
+      <div class="node-wrap">
+        <div class="node"><svg viewBox="0 0 24 24"><path d="M4 16 L8 8 L12 14 L16 6 L20 16" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="node-label">Tunnel</div>
+      </div>
+      <div class="node-wrap">
+        <div class="node"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="M15 15 L20 20" stroke-linecap="round"/></svg></div>
+        <div class="node-label">Dig</div>
+      </div>
+      <div class="node-wrap">
+        <div class="node"><svg viewBox="0 0 24 24"><path d="M4 9 L12 3 L20 9 L12 21 Z M4 9 L12 21 M20 9 L12 21 M12 3 L8 9 M12 3 L16 9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="node-label">Fool's Gold</div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="plaque">
+        <div>
+          <p class="kicker">Digger</p>
+          <h1>Round 1: Sort the Mine</h1>
+        </div>
+        <div class="score-plate">
+          <div class="lbl">Score</div>
+          <div class="val">0</div>
+        </div>
+      </div>
+
+      <p class="instructions">Nine things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, business problem in the middle, real economic impact at the bottom.</p>
+
+      <div class="bin bin-dirt">
+        <div class="bin-icon"><svg viewBox="0 0 24 24"><path d="M3 18 Q6 14 9 18 Q12 12 15 18 Q18 13 21 18" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="bin-label">Dirt</div>
+      </div>
+      <div class="bin bin-rock">
+        <div class="bin-icon"><svg viewBox="0 0 24 24"><path d="M4 16 L8 7 L13 12 L16 5 L20 16 Z" stroke-linejoin="round"/></svg></div>
+        <div class="bin-label">Rock</div>
+      </div>
+      <div class="bin bin-gold">
+        <div class="bin-icon"><svg viewBox="0 0 24 24"><path d="M4 9 L12 3 L20 9 L12 21 Z" stroke-linejoin="round"/></svg></div>
+        <div class="bin-label">Gold</div>
+      </div>
+
+      <p class="hint">Tap a statement, then tap the layer it belongs in.</p>
+
+      <div class="tray">
+        <div class="card">Different teams work from different datasets and sources.</div>
+        <div class="card">Our team spends a lot of time searching multiple sites.</div>
+        <div class="card">Our win rate has declined from 30% to 22% over the last two years.</div>
+        <div class="card">Finding opportunities is very time-consuming.</div>
+        <div class="card">A single missed recompete could put $10M of annual revenue at risk.</div>
+        <div class="card">We hear about opportunities too late.</div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn">Check results</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

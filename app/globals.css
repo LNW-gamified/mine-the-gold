@@ -79,6 +79,34 @@ h1, h2, h3, .display {
   background-image: var(--strata), var(--grain);
 }
 
+/* Cave background scene (CaveBackground.tsx): fixed full-viewport SVG cave layer
+   plus a vignette overlay, with an optional drifting dust-mote layer on top.
+   Values copied directly from round1-mockup-v3.html. */
+.scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.scene svg { width: 100%; height: 100%; }
+.vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 65% at 50% 45%, transparent 40%, rgba(0,0,0,0.75) 100%);
+}
+
+.mote {
+  position: fixed;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #fff2c4;
+  box-shadow: 0 0 6px 1px rgba(232,177,61,0.8);
+  z-index: 1;
+  animation: drift 14s ease-in-out infinite;
+  opacity: 0;
+  will-change: opacity;
+}
+@keyframes drift {
+  0% { opacity: 0; transform: translateY(0) translateX(0); }
+  15% { opacity: 0.8; }
+  85% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-90px) translateX(20px); }
+}
+
 /* Ore-chunk card: irregular hewn silhouette instead of a plain rounded box */
 .ore-card {
   background: var(--surface-raised);

@@ -1,8 +1,11 @@
 import Link from "next/link";
+import CaveBackground from "@/components/CaveBackground";
 
 export default function Home() {
   return (
-    <main className="flex-1 flex flex-col items-center justify-center px-6 strata">
+    <>
+      <CaveBackground motes={false} />
+      <main className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
       <div className="max-w-xl w-full text-center py-16">
         <p className="text-text-dim uppercase tracking-[0.2em] text-xs mb-4">
           Into the Mine &middot; Discovery Challenge
@@ -30,6 +33,7 @@ export default function Home() {
           </Link>
         </div>
       </div>
-    </main>
+      </main>
+    </>
   );
 }

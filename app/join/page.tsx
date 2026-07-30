@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import CaveBackground from "@/components/CaveBackground";
 
 export default function JoinPage() {
   const router = useRouter();
@@ -76,7 +77,9 @@ export default function JoinPage() {
   }
 
   return (
-    <main className="flex-1 flex items-center justify-center px-6 strata">
+    <>
+      <CaveBackground motes={false} />
+      <main className="flex-1 flex items-center justify-center px-6 relative z-10">
       <form onSubmit={handleJoin} className="ore-card-subtle p-8 w-full max-w-sm" style={{ borderTopColor: "var(--gold)" }}>
         <h1 className="text-2xl font-bold mb-1">Join the dig</h1>
         <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s room code and pick a team name.</p>
@@ -104,6 +107,7 @@ export default function JoinPage() {
           {loading ? "Joining..." : "Start digging"}
         </button>
       </form>
-    </main>
+      </main>
+    </>
   );
 }
