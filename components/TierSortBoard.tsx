@@ -23,16 +23,6 @@ export interface SortResult {
   points: number;
 }
 
-function hashStringToRange(str: string, min: number, max: number): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  const normalized = (Math.abs(hash) % 1000) / 1000;
-  return min + normalized * (max - min);
-}
-
 function IconCheck() {
   return (
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -110,7 +100,9 @@ export default function TierSortBoard({
   const allPlaced = items.every((i) => placements[i.id]);
 
   function labelColor(colorVar: string) {
-    return colorVar === "rock" ? "var(--rock-label)" : `var(--${colorVar})`;
+    if (colorVar === "rock") return "var(--rock-label)";
+    if (colorVar === "gold") return "#3a2400";
+    return `var(--${colorVar})`;
   }
 
   function placeIn(binKey: string) {
@@ -272,7 +264,6 @@ export default function TierSortBoard({
             key={item.id}
             onClick={() => pickUp(item.id)}
             className={`ore-card px-4 py-3 text-sm text-left ${layout === "stack" ? "" : "max-w-xs"} ${selected === item.id ? "selected" : ""}`}
-            style={{ ["--card-rotate" as string]: `${hashStringToRange(item.id, -1.5, 1.5)}deg` }}
           >
             {item.label}
           </button>

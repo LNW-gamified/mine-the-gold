@@ -106,29 +106,25 @@ h1, h2, h3, .display {
   100% { opacity: 0; transform: translateY(-90px) translateX(20px); }
 }
 
-/* Ore-chunk card: irregular hewn silhouette instead of a plain rounded box.
-   Background/border/box-shadow/clip-path copied from round1-mockup-v3.html's
-   .card; the per-instance rotation (--card-rotate, set inline in
-   TierSortBoard.tsx) is this app's own mechanism and composes with the
-   mockup's values via the same rotate(var(--card-rotate, 0deg)) transform. */
+/* Ore-card: clean rounded tile (previously a jagged clip-path silhouette with
+   per-card rotation; both dropped in favor of a simpler flat card). */
 .ore-card {
   background: linear-gradient(160deg, #241a10 0%, #171008 100%);
   border: 1px solid #3a2c18;
-  box-shadow: 4px 5px 0 rgba(0,0,0,0.45), 0 8px 18px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
-  clip-path: polygon(3% 12%, 16% 0%, 84% 2%, 98% 14%, 100% 82%, 88% 100%, 12% 98%, 0% 86%);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 3px 8px rgba(0,0,0,0.4);
   position: relative;
-  transform: rotate(var(--card-rotate, 0deg));
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .ore-card:hover {
-  transform: translateY(-3px) rotate(var(--card-rotate, 0deg));
+  transform: translateY(-3px);
   border-color: #e8b13d;
-  box-shadow: 0 0 14px rgba(232,177,61,0.4), 4px 5px 0 rgba(0,0,0,0.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 6px 14px rgba(0,0,0,0.4), 0 0 14px rgba(232,177,61,0.35);
 }
 .ore-card.selected {
-  transform: translateY(-3px) rotate(var(--card-rotate, 0deg));
+  transform: translateY(-3px);
   border-color: #e8b13d;
-  box-shadow: 0 0 12px rgba(232,177,61,0.5), 4px 5px 0 rgba(0,0,0,0.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 6px 14px rgba(0,0,0,0.4), 0 0 14px rgba(232,177,61,0.5);
 }
 
 /* Ore-card variant for wide, short rows (e.g. the results list): .ore-card's notch
