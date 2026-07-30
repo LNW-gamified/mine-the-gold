@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactElement } from "react";
 
 export interface SortItem {
   id: string;
@@ -48,6 +48,41 @@ function IconX() {
     </svg>
   );
 }
+
+// Bin icons, one per bin color: copied from round1-mockup-v3.html's
+// .bin-dirt/.bin-rock/.bin-gold icons. Sizing/stroke come from the
+// .bin-icon svg CSS rule, not props here.
+const BIN_ICON_PROPS = { viewBox: "0 0 24 24", fill: "none", strokeLinejoin: "round" as const };
+
+function IconBinDirt() {
+  return (
+    <svg {...BIN_ICON_PROPS} strokeLinecap="round">
+      <path d="M3 18 Q6 14 9 18 Q12 12 15 18 Q18 13 21 18" />
+    </svg>
+  );
+}
+
+function IconBinRock() {
+  return (
+    <svg {...BIN_ICON_PROPS}>
+      <path d="M4 16 L8 7 L13 12 L16 5 L20 16 Z" />
+    </svg>
+  );
+}
+
+function IconBinGold() {
+  return (
+    <svg {...BIN_ICON_PROPS}>
+      <path d="M4 9 L12 3 L20 9 L12 21 Z" />
+    </svg>
+  );
+}
+
+const BIN_ICONS: Record<string, () => ReactElement> = {
+  dirt: IconBinDirt,
+  rock: IconBinRock,
+  gold: IconBinGold,
+};
 
 export default function TierSortBoard({
   items,
@@ -174,6 +209,9 @@ export default function TierSortBoard({
                 className={`bin bin-${bin.colorVar} p-3 min-h-[64px] w-full max-w-full overflow-hidden flex items-center gap-3 text-left ${selected ? "active" : ""}`}
                 style={{ ["--bin-color" as string]: `var(--${bin.colorVar})` }}
               >
+                {BIN_ICONS[bin.colorVar] && (
+                  <span className="bin-icon">{BIN_ICONS[bin.colorVar]()}</span>
+                )}
                 <p className="stencil text-xs shrink-0" style={{ color: labelColor(bin.colorVar) }}>{bin.label}</p>
                 <div className="flex flex-wrap gap-1 justify-end flex-1 min-w-0">
                   {placed.map((i) => (
@@ -201,7 +239,12 @@ export default function TierSortBoard({
                 className={`bin bin-${bin.colorVar} p-3 min-h-[140px] text-left ${selected ? "active" : ""}`}
                 style={{ ["--bin-color" as string]: `var(--${bin.colorVar})` }}
               >
-                <p className="stencil text-xs mb-2" style={{ color: labelColor(bin.colorVar) }}>{bin.label}</p>
+                <div className="flex items-center gap-2 mb-2">
+                  {BIN_ICONS[bin.colorVar] && (
+                    <span className="bin-icon">{BIN_ICONS[bin.colorVar]()}</span>
+                  )}
+                  <p className="stencil text-xs" style={{ color: labelColor(bin.colorVar) }}>{bin.label}</p>
+                </div>
                 <div className="space-y-1">
                   {placed.map((i) => (
                     <div

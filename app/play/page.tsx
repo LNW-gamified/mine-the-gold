@@ -16,20 +16,20 @@ const DEV_MODE_FREE_NAV = true;
 
 const ICON_PROPS = {
   viewBox: "0 0 24 24",
-  width: 16,
-  height: 16,
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 2,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
 };
 
-function IconPickaxe() {
+// Rail node icons: copied from round1-mockup-v3.html's node-wrap SVGs
+// ("Dirt"/shovel, "Tunnel", "Dig"/magnifier, "Fool's Gold"/diamond).
+// Sizing/stroke-width/color come from the .node svg CSS rule, not props here.
+function IconShovel() {
   return (
     <svg {...ICON_PROPS}>
-      <path d="M3 11c3-6 7-9 10-9s7 3 10 9" />
-      <path d="M13 4 7 19" />
+      <path d="M12 3 L12 15 M7 9 L12 3 L17 9" />
+      <path d="M6 15 h12 l-1.5 6 h-9 z" />
     </svg>
   );
 }
@@ -37,28 +37,47 @@ function IconPickaxe() {
 function IconTunnel() {
   return (
     <svg {...ICON_PROPS}>
-      <path d="M4 20V11a8 8 0 0 1 16 0v9" />
-      <path d="M8 20v-5a4 4 0 0 1 8 0v5" />
-      <path d="M2 20h20" />
+      <path d="M4 16 L8 8 L12 14 L16 6 L20 16" />
     </svg>
   );
 }
 
-function IconLantern() {
+function IconMagnifier() {
   return (
     <svg {...ICON_PROPS}>
       <circle cx="10" cy="10" r="6" />
-      <path d="M14.5 14.5 20 20" />
+      <path d="M15 15 L20 20" />
+    </svg>
+  );
+}
+
+function IconDiamond() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M4 9 L12 3 L20 9 L12 21 Z M4 9 L12 21 M20 9 L12 21 M12 3 L8 9 M12 3 L16 9" />
     </svg>
   );
 }
 
 const ROUND_ICONS: Record<number, () => ReactElement> = {
-  1: IconLantern,
-  2: IconPickaxe,
+  1: IconMagnifier,
+  2: IconShovel,
   3: IconTunnel,
-  4: IconPickaxe,
+  4: IconDiamond,
 };
+
+// Rail track/fill geometry, matching the .rail/.node/.node-label CSS in
+// globals.css: 26px rail padding-top, a 46px node, an 8px label margin-top,
+// a 10px label height (line-height: 1 at font-size 10px), and a 44px
+// node-wrap margin-bottom. The mockup hardcodes rail-track-fill to a static
+// 0px placeholder and its own top/bottom insets don't correspond to any of
+// these numbers, so the real top/height are computed here instead.
+const ROUND_COUNT = 4;
+const RAIL_PADDING_TOP = 26;
+const NODE_SIZE = 46;
+const SLOT_HEIGHT = NODE_SIZE + 8 + 10 + 44; // 108
+const FIRST_NODE_CENTER = RAIL_PADDING_TOP + NODE_SIZE / 2; // 49
+const TRACK_HEIGHT = SLOT_HEIGHT * (ROUND_COUNT - 1); // 324
 
 export default function PlayPage() {
   const router = useRouter();
@@ -117,90 +136,90 @@ export default function PlayPage() {
   }
 
   const round = team.current_round;
+  const doneSegments = Math.min(Math.max(round - 1, 0), ROUND_COUNT - 1);
+  const fillHeight = (doneSegments / (ROUND_COUNT - 1)) * TRACK_HEIGHT;
 
   return (
     <>
       <CaveBackground />
-      <main className="flex-1 flex relative z-10">
-      <aside className="depth-rail w-16 sm:w-20 flex flex-col items-center py-6 gap-4 relative">
-        {/* Line spans icon-center to icon-center: top-10 = py-6 + half of the 32px node; height covers
-            the 3 gaps between the 4 nodes given the fixed 32px icon + 24px label row height. */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-10 w-[2px] h-[228px] flex flex-col" aria-hidden="true">
-          {[1, 2, 3].map((seg) => (
-            <div key={seg} className="flex-1" style={{ background: round > seg ? "var(--gold)" : "var(--border)" }} />
-          ))}
-        </div>
-        {[1, 2, 3, 4].map((r) => {
-          const Icon = ROUND_ICONS[r];
-          return (
-            <div
-              key={r}
-              className={`relative flex flex-col items-center gap-1 ${DEV_MODE_FREE_NAV ? "cursor-pointer" : ""}`}
-              onClick={DEV_MODE_FREE_NAV ? () => jumpToRound(r) : undefined}
-            >
-              <div className={`depth-node w-8 h-8 rounded-full flex items-center justify-center ${round > r ? "done" : round === r ? "active" : ""}`}>
-                <Icon />
-              </div>
-              <span
-                className="text-[9px] leading-[10px] text-center w-14 h-6 flex items-center justify-center"
-                style={{ color: "var(--rail-label)" }}
-              >
-                {ROUND_SHORT_NAMES[r]}
-              </span>
-            </div>
-          );
-        })}
-      </aside>
+      <main className="flex-1 flex items-start justify-center px-4 py-10 sm:py-16 relative z-10">
+        <div className="frame w-full">
+          <div className="bolt tl" /><div className="bolt tr" />
+          <div className="bolt bl" /><div className="bolt br" />
 
-      <div className="flex-1 flex flex-col">
-        <header className="border-b border-border px-6 py-4 flex justify-between items-center bg-bg/80">
-          <div>
-            <p className="text-xs text-text-dim uppercase tracking-widest">{team.name}</p>
-            <h1 className="text-lg font-bold text-nugget stencil">{ROUND_NAMES[round]}</h1>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-text-dim uppercase tracking-widest">Score</p>
-            <p className="text-2xl font-bold text-gold">{team.score}</p>
-          </div>
-        </header>
+          <div className="flex">
+            <div className="rail">
+              <div className="rail-track" style={{ top: FIRST_NODE_CENTER, height: TRACK_HEIGHT }} />
+              <div className="rail-track-fill" style={{ top: FIRST_NODE_CENTER, height: fillHeight }} />
 
-        <div className="flex-1 max-w-2xl w-full mx-auto px-6 py-10">
-          {round === 0 && (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-bold mb-3">Ready to dig, {team.name}?</h2>
-              <p className="text-text-dim mb-8">
-                Four rounds. Every one asks the same question: is this dirt, rock, gold, or a gold nugget?
-                Play at your own pace, no need to wait on anyone else.
-              </p>
-              <button className="btn btn-gold" onClick={advanceRound}>Start Round 1</button>
-
-              {DEV_MODE_FREE_NAV && (
-                <div className="mt-8 pt-6 border-t border-border">
-                  <p className="text-xs text-text-dim uppercase tracking-widest mb-2">Dev: jump to round</p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {[1, 2, 3, 4].map((r) => (
-                      <button key={r} className="btn btn-ghost text-xs" onClick={() => jumpToRound(r)}>
-                        {r}. {ROUND_SHORT_NAMES[r]}
-                      </button>
-                    ))}
+              {[1, 2, 3, 4].map((r) => {
+                const Icon = ROUND_ICONS[r];
+                return (
+                  <div
+                    key={r}
+                    className={`node-wrap ${DEV_MODE_FREE_NAV ? "cursor-pointer" : ""}`}
+                    onClick={DEV_MODE_FREE_NAV ? () => jumpToRound(r) : undefined}
+                  >
+                    <div className={`node ${round > r ? "done" : round === r ? "active" : ""}`}>
+                      <Icon />
+                    </div>
+                    <div className="node-label">{ROUND_SHORT_NAMES[r]}</div>
                   </div>
+                );
+              })}
+            </div>
+
+            <div className="flex-1 min-w-0 flex flex-col pt-[30px] px-4 sm:px-11 pb-10">
+              <div className="plaque">
+                <div>
+                  <p className="kicker">{team.name}</p>
+                  <h1>{ROUND_NAMES[round]}</h1>
                 </div>
-              )}
+                <div className="score-plate">
+                  <div className="lbl">Score</div>
+                  <div className="val">{team.score}</div>
+                </div>
+              </div>
+
+              <div className="flex-1">
+                {round === 0 && (
+                  <div className="text-center py-12">
+                    <h2 className="text-2xl font-bold mb-3">Ready to dig, {team.name}?</h2>
+                    <p className="text-text-dim mb-8">
+                      Four rounds. Every one asks the same question: is this dirt, rock, gold, or a gold nugget?
+                      Play at your own pace, no need to wait on anyone else.
+                    </p>
+                    <button className="btn btn-gold" onClick={advanceRound}>Start Round 1</button>
+
+                    {DEV_MODE_FREE_NAV && (
+                      <div className="mt-8 pt-6 border-t border-border">
+                        <p className="text-xs text-text-dim uppercase tracking-widest mb-2">Dev: jump to round</p>
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {[1, 2, 3, 4].map((r) => (
+                            <button key={r} className="btn btn-ghost text-xs" onClick={() => jumpToRound(r)}>
+                              {r}. {ROUND_SHORT_NAMES[r]}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {round === 1 && <Round3DigDeeper sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
+                {round === 2 && <Round1Sort sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
+                {round === 3 && <Round2Tunnel sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
+                {round === 4 && <Round4FoolsGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
+                {round >= 5 && (
+                  <div className="text-center py-12">
+                    <h2 className="text-3xl font-bold text-nugget mb-2 stencil">The dig is done</h2>
+                    <p className="text-text-dim mb-2">Final score: {team.score} points</p>
+                    <p className="text-text-dim text-sm">Check the facilitator&apos;s screen for how your team stacked up.</p>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-          {round === 1 && <Round3DigDeeper sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-          {round === 2 && <Round1Sort sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-          {round === 3 && <Round2Tunnel sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-          {round === 4 && <Round4FoolsGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-          {round >= 5 && (
-            <div className="text-center py-12">
-              <h2 className="text-3xl font-bold text-nugget mb-2 stencil">The dig is done</h2>
-              <p className="text-text-dim mb-2">Final score: {team.score} points</p>
-              <p className="text-text-dim text-sm">Check the facilitator&apos;s screen for how your team stacked up.</p>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
       </main>
     </>
   );

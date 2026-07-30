@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto_Slab, Inter } from "next/font/google";
+import { Roboto_Slab, Inter, Rye, Oswald } from "next/font/google";
 import "./globals.css";
 
 const slab = Roboto_Slab({
@@ -13,6 +13,18 @@ const body = Inter({
   subsets: ["latin"],
 });
 
+const rye = Rye({
+  variable: "--font-rye",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Into the Mine | Discovery Challenge",
   description: "Mine the Gold - a discovery training game",
@@ -24,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${slab.variable} ${body.variable} h-full`}>
+    <html lang="en" className={`${slab.variable} ${body.variable} ${rye.variable} ${oswald.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-bg text-text">{children}</body>
     </html>
   );
