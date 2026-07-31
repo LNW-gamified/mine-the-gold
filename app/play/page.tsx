@@ -16,9 +16,6 @@ import GameSummary from "@/components/GameSummary";
 import HeroBackground from "@/components/HeroBackground";
 import RoundRecap from "@/components/RoundRecap";
 
-// Set to false to lock rounds back to sequential progression for a real session.
-const DEV_MODE_FREE_NAV = false;
-
 // Purely celebratory: always ends up full and overflowing regardless of the
 // team's actual score, so the count/positions here are fixed, not derived
 // from points. Delays are staggered ~130ms apart per nugget.
@@ -142,10 +139,31 @@ export default function PlayPage() {
   // round doesn't fight with realtime score updates re-rendering the page.
   const [viewingRound, setViewingRound] = useState<number | null>(null);
   const [syncedRound, setSyncedRound] = useState<number | null>(null);
+  // Global, facilitator-controlled toggle (app_settings.dev_mode) - not a
+  // hardcoded constant, so it can be flipped live for an in-progress
+  // session without redeploying.
+  const [devMode, setDevMode] = useState(false);
 
   useEffect(() => {
     if (!sessionId || !teamId) router.push("/join");
   }, [sessionId, teamId, router]);
+
+  useEffect(() => {
+    supabase.from("app_settings").select("dev_mode").eq("id", true).single().then(({ data }) => {
+      if (data) setDevMode(data.dev_mode);
+    });
+
+    const channel = supabase
+      .channel("app-settings")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "app_settings", filter: "id=eq.true" },
+        (payload) => setDevMode((payload.new as { dev_mode: boolean }).dev_mode)
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   useEffect(() => {
     if (!teamId) return;
@@ -180,7 +198,7 @@ export default function PlayPage() {
   }
 
   async function jumpToRound(r: number) {
-    if (!DEV_MODE_FREE_NAV) return;
+    if (!devMode) return;
     if (!teamId) return;
     const { data } = await supabase.from("teams").update({ current_round: r }).eq("id", teamId).select("*").single();
     if (data) setTeam(data);
@@ -222,7 +240,7 @@ export default function PlayPage() {
                 // DEV_MODE additionally allows jumping ahead to a round not
                 // yet reached, for testing; the current round stays
                 // non-interactive either way (nothing to jump to or recap).
-                const canJumpAhead = DEV_MODE_FREE_NAV && r !== round;
+                const canJumpAhead = devMode && r !== round;
                 const onClick = completed
                   ? () => setViewingRound(r)
                   : canJumpAhead
@@ -278,7 +296,7 @@ export default function PlayPage() {
                     </p>
                     <button className="btn btn-gold" onClick={advanceRound}>Start Round 1</button>
 
-                    {DEV_MODE_FREE_NAV && (
+                    {devMode && (
                       <div className="mt-8 pt-6 border-t border-border">
                         <p className="text-xs text-text-dim uppercase tracking-widest mb-2">Dev: jump to round</p>
                         <div className="flex flex-wrap justify-center gap-2">

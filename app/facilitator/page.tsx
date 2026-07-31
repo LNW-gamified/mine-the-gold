@@ -47,6 +47,24 @@ export default function FacilitatorPage() {
   const [historyTeams, setHistoryTeams] = useState<Record<string, Team[]>>({});
   const [teams, setTeams] = useState<Team[]>([]);
   const [insightsOpen, setInsightsOpen] = useState(false);
+  const [devMode, setDevMode] = useState(false);
+
+  useEffect(() => {
+    supabase.from("app_settings").select("dev_mode").eq("id", true).single().then(({ data }) => {
+      if (data) setDevMode(data.dev_mode);
+    });
+
+    const channel = supabase
+      .channel("app-settings")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "app_settings", filter: "id=eq.true" },
+        (payload) => setDevMode((payload.new as { dev_mode: boolean }).dev_mode)
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   useEffect(() => {
     const sid = localStorage.getItem("mtg_facilitator_session_id");
@@ -90,6 +108,16 @@ export default function FacilitatorPage() {
     }
   }
 
+  async function toggleDevMode() {
+    const { data } = await supabase
+      .from("app_settings")
+      .update({ dev_mode: !devMode })
+      .eq("id", true)
+      .select("dev_mode")
+      .single();
+    if (data) setDevMode(data.dev_mode);
+  }
+
   async function endSession() {
     if (!session) return;
     await supabase.from("sessions").update({ active: false }).eq("id", session.id);
@@ -108,6 +136,14 @@ export default function FacilitatorPage() {
       <main className="flex-1 relative flex flex-col items-center px-6 py-16">
         <HeroBackground />
         <div className="max-w-md w-full relative z-10">
+          <div className="flex justify-end mb-4">
+            <button
+              className={`btn text-xs ${devMode ? "btn-gold" : "btn-ghost"}`}
+              onClick={toggleDevMode}
+            >
+              Dev mode: {devMode ? "ON" : "OFF"}
+            </button>
+          </div>
           <div className="ore-card-subtle p-8 mb-8" style={{ borderTopColor: "var(--gold)" }}>
             <h1 className="text-2xl font-bold mb-1 stencil">Start a session</h1>
             <p className="text-text-dim text-sm mb-6">
@@ -167,7 +203,15 @@ export default function FacilitatorPage() {
             <p className="text-xs text-text-dim uppercase tracking-widest">{session.label}</p>
             <h1 className="text-3xl font-bold text-nugget stencil">Room code: {session.room_code}</h1>
           </div>
-          <button className="btn btn-ghost text-sm" onClick={endSession}>End session</button>
+          <div className="flex items-center gap-2">
+            <button
+              className={`btn text-sm ${devMode ? "btn-gold" : "btn-ghost"}`}
+              onClick={toggleDevMode}
+            >
+              Dev mode: {devMode ? "ON" : "OFF"}
+            </button>
+            <button className="btn btn-ghost text-sm" onClick={endSession}>End session</button>
+          </div>
         </header>
 
         <section className="ore-card-subtle p-6" style={{ borderTopColor: "var(--nugget)" }}>
