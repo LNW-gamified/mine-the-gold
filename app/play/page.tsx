@@ -12,7 +12,6 @@ import Round2Tunnel from "@/components/rounds/Round2Tunnel";
 import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
 import RivalTicker from "@/components/RivalTicker";
-import IdleLeaderboard from "@/components/IdleLeaderboard";
 import GameSummary from "@/components/GameSummary";
 import HeroBackground from "@/components/HeroBackground";
 import RoundRecap from "@/components/RoundRecap";
@@ -332,7 +331,6 @@ export default function PlayPage() {
                   <div className="text-center py-12">
                     <CelebrationCart />
                     <GameSummary teamId={teamId} finalScore={team.score} />
-                    <IdleLeaderboard sessionId={sessionId} myTeamId={teamId} />
                   </div>
                 )}
               </div>
