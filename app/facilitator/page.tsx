@@ -18,6 +18,14 @@ function makeRoomCode() {
   return code;
 }
 
+// "Round 1 - Sort" for the actual numbered rounds; "Start"/"Done" (with no
+// round number, since neither is really "Round 0" or "Round 5") for the
+// two bookend states.
+function roundStatusLabel(currentRound: number): string {
+  const short = ROUND_SHORT_NAMES[currentRound] ?? "—";
+  return currentRound >= 1 && currentRound <= 4 ? `Round ${currentRound} - ${short}` : short;
+}
+
 // Nugget decoration tiers copied from leaderboard-race.html's three example
 // carts (1st place = 3 nuggets, 2nd = 1, 3rd = 0), applied by rank rather
 // than a score formula since the mockup only defines these three states.
@@ -252,7 +260,7 @@ export default function FacilitatorPage() {
                   </span>
                   <span className="lane-score">{t.score}</span>
                 </div>
-                <p className="text-xs text-text-dim mb-2">On: {ROUND_SHORT_NAMES[t.current_round] ?? "—"}</p>
+                <p className="text-xs text-text-dim mb-2">On: {roundStatusLabel(t.current_round)}</p>
                 <div className="track">
                   <div className="rail-ties" />
                   <div className="finish" />
