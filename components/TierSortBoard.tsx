@@ -131,6 +131,13 @@ export default function TierSortBoard({
     await onSubmit(computed, total);
     setResults(computed);
     setPhase("revealed");
+    // One-shot effect, not part of the persistent-track system in
+    // lib/audioManager - marks "results are in", not "you got it right".
+    try {
+      const sfx = new Audio("/sounds/success.mp3");
+      sfx.volume = 0.4;
+      sfx.play().catch(() => {});
+    } catch {}
     setSubmitting(false);
   }
 
