@@ -53,7 +53,7 @@ export default function AudioToggle() {
       onClick={toggle}
       aria-label={playing ? "Mute sound" : "Unmute sound"}
       aria-pressed={playing}
-      className="bin-icon fixed bottom-6 left-6 z-40 cursor-pointer hover:brightness-125 transition"
+      className="bin-icon fixed bottom-6 right-6 z-40 cursor-pointer hover:brightness-125 transition"
       style={{ color: playing ? "#fff2c4" : "#b8a988" }}
     >
       {playing ? <IconSpeakerOn /> : <IconSpeakerOff />}

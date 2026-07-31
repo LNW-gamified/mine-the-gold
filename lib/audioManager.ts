@@ -8,8 +8,23 @@ let currentSrc: string | null = null;
 
 // Remembers the most recently requested track/options even after
 // stopTrack() clears currentAudio, so a mute toggle elsewhere can restart
-// "whatever was playing" without needing to know the track itself.
-let lastTrack: { src: string; opts: { loop: boolean; volume: number } } | null = null;
+// "whatever was playing" without needing to know the track itself. Mirrored
+// to localStorage (not just kept in memory) because a hard page reload
+// re-executes this module from scratch - without that, the toggle would
+// have nothing to restart until a track was started again some other way.
+const LAST_TRACK_KEY = "mtg_last_track";
+
+function readLastTrack(): { src: string; opts: { loop: boolean; volume: number } } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(LAST_TRACK_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+let lastTrack: { src: string; opts: { loop: boolean; volume: number } } | null = readLastTrack();
 
 // Lets UI outside the call site (e.g. a mute button mounted in the root
 // layout) know playback state changed, since this module has no React
@@ -31,6 +46,9 @@ export function playTrack(
   if (typeof window === "undefined") return;
 
   lastTrack = { src, opts: { loop, volume } };
+  try {
+    localStorage.setItem(LAST_TRACK_KEY, JSON.stringify(lastTrack));
+  } catch {}
 
   // Already playing this exact track, don't restart it from the beginning.
   if (currentSrc === src && currentAudio && !currentAudio.paused) return;
