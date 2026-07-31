@@ -103,10 +103,14 @@ export function getCurrentTrackSrc(): string | null {
 // AudioToggle integration - it's short-lived (plays once to completion, the
 // element is just garbage collected) and the mute toggle only ever controls
 // the looping music channel.
-export function playVoiceover(src: string, { volume = 0.9 }: { volume?: number } = {}) {
+export function playVoiceover(
+  src: string,
+  { volume = 0.9, onEnded }: { volume?: number; onEnded?: () => void } = {}
+) {
   if (typeof window === "undefined") return;
   const audio = new Audio(src);
   audio.loop = false;
   audio.volume = volume;
+  if (onEnded) audio.addEventListener("ended", onEnded);
   audio.play().catch(() => {});
 }

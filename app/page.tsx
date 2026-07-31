@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import HeroBackground from "@/components/HeroBackground";
-import { playTrack, playVoiceover } from "@/lib/audioManager";
+import { getCurrentTrackSrc, playTrack, playVoiceover, setTrackVolume } from "@/lib/audioManager";
 
 export default function Home() {
   return (
@@ -28,7 +28,21 @@ export default function Home() {
             href="/join"
             onClick={() => {
               playTrack("/sounds/team-song.mp3", { loop: true, volume: 0.4 });
-              playVoiceover("/sounds/miner-intro.mp3");
+              // Duck for the voiceover, then restore once it actually ends
+              // (native 'ended' event, not a guessed timeout). If the join
+              // form gets submitted first, ambient-cave.mp3 takes over with
+              // its own independent volume - the guard here is what makes
+              // that actually a no-op: without it, a late-firing 'ended'
+              // (this clip runs ~60s, comfortably longer than most teams
+              // take to fill in the form) would call setTrackVolume(0.4) on
+              // whatever's playing *now*, audibly bumping ambient-cave back
+              // up mid-round instead of leaving it at 0.25.
+              setTrackVolume(0.3);
+              playVoiceover("/sounds/miner-intro.mp3", {
+                onEnded: () => {
+                  if (getCurrentTrackSrc() === "/sounds/team-song.mp3") setTrackVolume(0.4);
+                },
+              });
             }}
             className="btn btn-gold inline-flex px-10 py-4 text-base"
           >

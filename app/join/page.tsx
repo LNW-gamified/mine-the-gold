@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import HeroBackground from "@/components/HeroBackground";
-import { playTrack, setTrackVolume } from "@/lib/audioManager";
+import { playTrack } from "@/lib/audioManager";
 
 export default function JoinPage() {
   const router = useRouter();
@@ -13,15 +13,6 @@ export default function JoinPage() {
   const [teamName, setTeamName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  // Ducks the team-song (still playing from the homepage's "Start Digging"
-  // click at 0.4) down to 0.3 specifically on this screen, so the one-shot
-  // voiceover reads more clearly against it. No need to restore it -
-  // handleJoin's own playTrack(ambient-cave, ...) call takes over with its
-  // own independent volume once the user submits.
-  useEffect(() => {
-    setTrackVolume(0.3);
-  }, []);
 
   async function handleJoin(e: React.FormEvent) {
     e.preventDefault();
