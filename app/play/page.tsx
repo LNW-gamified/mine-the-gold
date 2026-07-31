@@ -235,18 +235,25 @@ export default function PlayPage() {
                 // A completed round always opens its read-only recap, dev
                 // mode or not - that's the real feature being tested here.
                 // DEV_MODE additionally allows jumping ahead to a round not
-                // yet reached, for testing; the current round stays
-                // non-interactive either way (nothing to jump to or recap).
+                // yet reached, for testing. The team's actual current round
+                // is clickable too, but only to come BACK to it after
+                // viewing something else (viewingRound !== round) - this is
+                // core navigation, not dev-only, since without it there's no
+                // way back to the in-progress round once you've clicked into
+                // a past one's recap.
                 const canJumpAhead = devMode && r !== round;
+                const canReturnToCurrent = r === round && viewingRound !== round;
                 const onClick = completed
                   ? () => setViewingRound(r)
+                  : canReturnToCurrent
+                  ? () => setViewingRound(round)
                   : canJumpAhead
                   ? () => jumpToRound(r)
                   : undefined;
                 return (
                   <div
                     key={r}
-                    className={`node-wrap ${(completed || canJumpAhead) ? "cursor-pointer" : ""}`}
+                    className={`node-wrap ${(completed || canReturnToCurrent || canJumpAhead) ? "cursor-pointer" : ""}`}
                     onClick={onClick}
                   >
                     <div className={`node ${round > r ? "done" : round === r ? "active" : ""}`}>

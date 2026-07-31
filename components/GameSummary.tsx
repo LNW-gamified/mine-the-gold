@@ -76,39 +76,23 @@ export default function GameSummary({ teamId, finalScore }: { teamId: string; fi
         <p className="text-text-dim text-sm">No recorded rounds for this team yet.</p>
       )}
 
-      <div className="text-left max-w-2xl mx-auto space-y-8">
+      <div className="text-left max-w-2xl mx-auto space-y-4">
         {rounds.map((r) => {
           const roundRows = rows.filter((row) => row.round === r);
           if (roundRows.length === 0) return null;
           const roundCorrect = roundRows.filter((row) => row.correct).length;
           return (
-            <div key={r}>
-              <div className="flex justify-between items-baseline mb-3 border-b border-border pb-2">
-                <h3 className="stencil text-sm text-gold">{ROUND_NAMES[r]}</h3>
-                <span className="text-xs text-text-dim">{roundCorrect}/{roundRows.length} correct</span>
-              </div>
-              <div className="space-y-2">
-                {roundRows.map((row) => (
-                  <div
-                    key={row.id}
-                    className="ore-card p-3"
-                    style={{ borderLeft: `4px solid ${row.correct ? "var(--gold)" : "var(--wildcard)"}` }}
-                  >
-                    <p className="text-sm">{row.answer_text ?? row.card_text ?? "—"}</p>
-                    <p className="text-xs text-text-dim mt-1">
-                      {row.correct ? "Correct" : "Missed"} &middot; {row.points_awarded} pts
-                    </p>
-                    {!row.correct && row.explanation && (
-                      <p className="text-xs text-text-dim mt-2 pt-2 border-t border-border italic">
-                        Why: {row.explanation}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
+            <div key={r} className="flex justify-between items-baseline border-b border-border pb-2">
+              <h3 className="stencil text-sm text-gold">{ROUND_NAMES[r]}</h3>
+              <span className="text-xs text-text-dim">{roundCorrect}/{roundRows.length} correct</span>
             </div>
           );
         })}
+        {rows.length > 0 && (
+          <p className="text-text-dim text-xs italic pt-2">
+            Go back to any round in the navigation on the left to review your exact answers.
+          </p>
+        )}
       </div>
     </div>
   );
