@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import HeroBackground from "@/components/HeroBackground";
 import { playTrack } from "@/lib/audioManager";
@@ -79,35 +80,46 @@ export default function JoinPage() {
   }
 
   return (
-    <main className="flex-1 relative flex items-center justify-center px-6">
+    <main className="flex-1 relative flex items-center justify-center px-6 py-10">
       <HeroBackground />
-      <form onSubmit={handleJoin} className="ore-card-subtle p-8 w-full max-w-sm relative z-10" style={{ borderTopColor: "var(--gold)" }}>
-        <h1 className="text-2xl font-bold mb-1">Join the dig</h1>
-        <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s room code and pick a team name.</p>
+      <div className="relative z-10 w-full max-w-4xl flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-10">
+        <form onSubmit={handleJoin} className="ore-card-subtle p-8 w-full max-w-sm shrink-0" style={{ borderTopColor: "var(--gold)" }}>
+          <h1 className="text-2xl font-bold mb-1">Join the dig</h1>
+          <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s room code and pick a team name.</p>
 
-        <label className="block text-sm mb-1 text-text-dim">Room code</label>
-        <input
-          className="w-full mb-4"
-          value={roomCode}
-          onChange={(e) => setRoomCode(e.target.value)}
-          placeholder="e.g. GOLD42"
-          autoCapitalize="characters"
-        />
+          <label className="block text-sm mb-1 text-text-dim">Room code</label>
+          <input
+            className="w-full mb-4"
+            value={roomCode}
+            onChange={(e) => setRoomCode(e.target.value)}
+            placeholder="e.g. GOLD42"
+            autoCapitalize="characters"
+          />
 
-        <label className="block text-sm mb-1 text-text-dim">Team name</label>
-        <input
-          className="w-full mb-6"
-          value={teamName}
-          onChange={(e) => setTeamName(e.target.value)}
-          placeholder="e.g. Deep Diggers"
-        />
+          <label className="block text-sm mb-1 text-text-dim">Team name</label>
+          <input
+            className="w-full mb-6"
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value)}
+            placeholder="e.g. Deep Diggers"
+          />
 
-        {error && <p className="text-wildcard text-sm mb-4">{error}</p>}
+          {error && <p className="text-wildcard text-sm mb-4">{error}</p>}
 
-        <button type="submit" disabled={loading} className="btn btn-gold w-full">
-          {loading ? "Joining..." : "Start digging"}
-        </button>
-      </form>
+          <button type="submit" disabled={loading} className="btn btn-gold w-full">
+            {loading ? "Joining..." : "Start digging"}
+          </button>
+        </form>
+
+        {/* Purely a visual/audio moment while the team fills in the form -
+            no interaction, no tooltip. The arrival voiceover is fired from
+            the homepage's "Start Digging" click (lib/audioManager.ts), not
+            from here, so it never replays on a plain reload of this page. */}
+        <div className="prospector-wrap" aria-hidden="true">
+          <div className="prospector-glow" />
+          <Image src="/prospector.png" alt="" width={1024} height={1024} className="prospector-img" priority />
+        </div>
+      </div>
     </main>
   );
 }

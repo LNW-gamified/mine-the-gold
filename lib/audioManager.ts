@@ -96,3 +96,17 @@ export function isTrackPlaying(): boolean {
 export function getCurrentTrackSrc(): string | null {
   return currentSrc;
 }
+
+// A second, independent channel for one-shot voiceover clips that layers on
+// top of whatever's playing on the music channel above, without touching
+// currentAudio/currentSrc at all. Deliberately no pause/stop/mute wiring or
+// AudioToggle integration - it's short-lived (plays once to completion, the
+// element is just garbage collected) and the mute toggle only ever controls
+// the looping music channel.
+export function playVoiceover(src: string, { volume = 0.9 }: { volume?: number } = {}) {
+  if (typeof window === "undefined") return;
+  const audio = new Audio(src);
+  audio.loop = false;
+  audio.volume = volume;
+  audio.play().catch(() => {});
+}

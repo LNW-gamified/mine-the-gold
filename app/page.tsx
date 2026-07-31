@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import HeroBackground from "@/components/HeroBackground";
-import { playTrack } from "@/lib/audioManager";
+import { playTrack, playVoiceover } from "@/lib/audioManager";
 
 export default function Home() {
   return (
@@ -26,7 +26,10 @@ export default function Home() {
           </p>
           <Link
             href="/join"
-            onClick={() => playTrack("/sounds/team-song.mp3", { loop: true, volume: 0.4 })}
+            onClick={() => {
+              playTrack("/sounds/team-song.mp3", { loop: true, volume: 0.4 });
+              playVoiceover("/sounds/miner-intro.mp3");
+            }}
             className="btn btn-gold inline-flex px-10 py-4 text-base"
           >
             Start Digging
