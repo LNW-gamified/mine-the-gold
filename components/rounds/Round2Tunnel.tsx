@@ -6,9 +6,9 @@ import type { MineShaftScenario } from "@/lib/types";
 import TierSortBoard, { type SortResult } from "@/components/TierSortBoard";
 
 const BINS = [
-  { key: "p1", label: "1. Surface", colorVar: "dirt" },
-  { key: "p2", label: "2. Problem", colorVar: "rock" },
-  { key: "p3", label: "3. Impact", colorVar: "nugget" },
+  { key: "p1", label: "Dirt", colorVar: "dirt" },
+  { key: "p2", label: "Rock", colorVar: "rock" },
+  { key: "p3", label: "Gold", colorVar: "nugget" },
 ];
 
 function pickScenario(teamId: string, count: number) {
