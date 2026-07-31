@@ -60,6 +60,7 @@ export interface Submission {
   points_awarded: number;
   facilitator_scored: boolean;
   created_at: string;
+  explanation: string | null;
 }
 
 // Sum of every round's maximum possible points: 39 (Round 1) + 12 (Round 2,

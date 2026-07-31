@@ -6,9 +6,9 @@ import type { Card, DigDeeperPrompt } from "@/lib/types";
 import TierSortBoard, { type SortResult } from "@/components/TierSortBoard";
 
 const BINS = [
-  { key: "level2", label: "Level 2 question", colorVar: "rock" },
-  { key: "level3", label: "Level 3 question", colorVar: "gold" },
-  { key: "impact", label: "Economic impact question", colorVar: "nugget" },
+  { key: "level2", label: "Level 1 question", colorVar: "rock" },
+  { key: "level3", label: "Level 2 question", colorVar: "gold" },
+  { key: "impact", label: "Level 3 question", colorVar: "nugget" },
 ];
 
 function pickIndex(teamId: string, count: number) {

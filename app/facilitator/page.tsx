@@ -5,6 +5,8 @@ import { supabase } from "@/lib/supabase";
 import type { Session, Team } from "@/lib/types";
 import { MAX_POSSIBLE_SCORE } from "@/lib/types";
 import CartBody from "@/components/MineCart";
+import FacilitatorInsights from "@/components/FacilitatorInsights";
+import HeroBackground from "@/components/HeroBackground";
 
 function makeRoomCode() {
   const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -44,6 +46,7 @@ export default function FacilitatorPage() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyTeams, setHistoryTeams] = useState<Record<string, Team[]>>({});
   const [teams, setTeams] = useState<Team[]>([]);
+  const [insightsOpen, setInsightsOpen] = useState(false);
 
   useEffect(() => {
     const sid = localStorage.getItem("mtg_facilitator_session_id");
@@ -102,8 +105,9 @@ export default function FacilitatorPage() {
 
   if (!session) {
     return (
-      <main className="flex-1 flex flex-col items-center px-6 py-16 strata">
-        <div className="max-w-md w-full">
+      <main className="flex-1 relative flex flex-col items-center px-6 py-16">
+        <HeroBackground />
+        <div className="max-w-md w-full relative z-10">
           <div className="ore-card-subtle p-8 mb-8" style={{ borderTopColor: "var(--gold)" }}>
             <h1 className="text-2xl font-bold mb-1 stencil">Start a session</h1>
             <p className="text-text-dim text-sm mb-6">
@@ -155,8 +159,9 @@ export default function FacilitatorPage() {
   }
 
   return (
-    <main className="flex-1 flex flex-col strata px-6 py-8">
-      <div className="max-w-3xl w-full mx-auto">
+    <main className="flex-1 relative flex flex-col px-6 py-8">
+      <HeroBackground />
+      <div className="max-w-3xl w-full mx-auto relative z-10">
         <header className="flex flex-wrap justify-between items-center gap-4 mb-8">
           <div>
             <p className="text-xs text-text-dim uppercase tracking-widest">{session.label}</p>
@@ -191,6 +196,21 @@ export default function FacilitatorPage() {
               </div>
             );
           })}
+        </section>
+
+        <section className="ore-card-subtle p-6 mt-6" style={{ borderTopColor: "var(--rock)" }}>
+          <button
+            className="flex justify-between items-center w-full text-left"
+            onClick={() => setInsightsOpen(!insightsOpen)}
+          >
+            <h2 className="font-bold stencil text-sm">Coaching insights</h2>
+            <span className="text-xs text-text-dim underline">{insightsOpen ? "Hide" : "Show"}</span>
+          </button>
+          {insightsOpen && (
+            <div className="mt-4">
+              <FacilitatorInsights sessionId={session.id} />
+            </div>
+          )}
         </section>
       </div>
     </main>

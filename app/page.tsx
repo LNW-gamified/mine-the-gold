@@ -1,23 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
+import HeroBackground from "@/components/HeroBackground";
 
 export default function Home() {
   return (
     <main className="flex-1 relative flex flex-col">
-      <Image
-        src="/mine-hero.webp"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover"
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: "linear-gradient(180deg, rgba(11,9,6,0.75) 0%, rgba(11,9,6,0.55) 40%, rgba(11,9,6,0.85) 100%)",
-        }}
-      />
+      <HeroBackground />
 
       <div className="relative z-10 flex justify-end px-6 py-6">
         <Link href="/facilitator" className="text-xs text-text-dim uppercase tracking-widest hover:text-text transition">

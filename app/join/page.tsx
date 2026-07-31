@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import Image from "next/image";
+import HeroBackground from "@/components/HeroBackground";
 
 export default function JoinPage() {
   const router = useRouter();
@@ -78,20 +78,7 @@ export default function JoinPage() {
 
   return (
     <main className="flex-1 relative flex items-center justify-center px-6">
-      <Image
-        src="/mine-hero.webp"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover"
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: "linear-gradient(180deg, rgba(11,9,6,0.75) 0%, rgba(11,9,6,0.55) 40%, rgba(11,9,6,0.85) 100%)",
-        }}
-      />
+      <HeroBackground />
       <form onSubmit={handleJoin} className="ore-card-subtle p-8 w-full max-w-sm relative z-10" style={{ borderTopColor: "var(--gold)" }}>
         <h1 className="text-2xl font-bold mb-1">Join the dig</h1>
         <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s room code and pick a team name.</p>

@@ -9,12 +9,12 @@ import Round1Sort from "@/components/rounds/Round1Sort";
 import Round2Tunnel from "@/components/rounds/Round2Tunnel";
 import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
-import CaveBackground from "@/components/CaveBackground";
 import CartBody from "@/components/MineCart";
 import RivalTicker from "@/components/RivalTicker";
 import IdleLeaderboard from "@/components/IdleLeaderboard";
 import GameSummary from "@/components/GameSummary";
 import AmbientAudio from "@/components/AmbientAudio";
+import HeroBackground from "@/components/HeroBackground";
 
 // Set to false to lock rounds back to sequential progression for a real session.
 const DEV_MODE_FREE_NAV = true;
@@ -164,10 +164,10 @@ export default function PlayPage() {
 
   if (!sessionId || !teamId || !team) {
     return (
-      <>
-        <CaveBackground />
-        <main className="flex-1 flex items-center justify-center text-text-dim relative z-10">Loading...</main>
-      </>
+      <main className="flex-1 relative flex items-center justify-center text-text-dim">
+        <HeroBackground />
+        <span className="relative z-10">Loading...</span>
+      </main>
     );
   }
 
@@ -177,11 +177,11 @@ export default function PlayPage() {
 
   return (
     <>
-      <CaveBackground />
       <RivalTicker sessionId={sessionId} myTeamId={teamId} />
       <AmbientAudio />
-      <main className="flex-1 flex items-start justify-center px-4 py-10 sm:py-16 relative z-10">
-        <div className="frame w-full">
+      <main className="flex-1 relative flex items-start justify-center px-4 py-10 sm:py-16">
+        <HeroBackground />
+        <div className="frame w-full relative z-10">
           <div className="bolt tl" /><div className="bolt tr" />
           <div className="bolt bl" /><div className="bolt br" />
 

@@ -7,9 +7,8 @@ import TierSortBoard, { type SortResult } from "@/components/TierSortBoard";
 
 const BINS = [
   { key: "p1", label: "1. Surface", colorVar: "dirt" },
-  { key: "p2", label: "2.", colorVar: "rock" },
-  { key: "p3", label: "3.", colorVar: "gold" },
-  { key: "p4", label: "4. Deepest", colorVar: "nugget" },
+  { key: "p2", label: "2. Problem", colorVar: "rock" },
+  { key: "p3", label: "3. Impact", colorVar: "nugget" },
 ];
 
 function pickScenario(teamId: string, count: number) {
@@ -41,10 +40,9 @@ export default function Round2Tunnel({
   if (!scenario) return <p className="text-text-dim">Loading tunnel...</p>;
 
   const items = [
-    { id: "dirt", label: scenario.dirt_text, correctBin: "p1", points: 2, explanation: scenario.dirt_explanation ?? undefined },
-    { id: "rock", label: scenario.rock_text, correctBin: "p2", points: 2, explanation: scenario.rock_explanation ?? undefined },
-    { id: "gold", label: scenario.gold_text, correctBin: "p3", points: 3, explanation: scenario.gold_explanation ?? undefined },
-    { id: "nugget", label: scenario.nugget_text, correctBin: "p4", points: 3, explanation: scenario.nugget_explanation ?? undefined },
+    { id: "dirt", label: scenario.dirt_text, correctBin: "p1", points: 3, explanation: scenario.dirt_explanation ?? undefined },
+    { id: "rock", label: scenario.rock_text, correctBin: "p2", points: 3, explanation: scenario.rock_explanation ?? undefined },
+    { id: "nugget", label: scenario.nugget_text, correctBin: "p3", points: 4, explanation: scenario.nugget_explanation ?? undefined },
   ];
 
   async function handleSubmit(results: SortResult[], total: number) {
@@ -72,7 +70,7 @@ export default function Round2Tunnel({
     <TierSortBoard
       items={items}
       bins={BINS}
-      instructions="Four statements from the same customer story, shuffled. Rebuild the tunnel: place them in the order a skilled rep would uncover them, from the first thing a prospect mentions down to the real economic impact."
+      instructions="Three statements from the same customer story, shuffled. Rebuild the tunnel: place them in the order a skilled rep would uncover them, from the first thing a prospect mentions down to the real economic impact."
       onSubmit={handleSubmit}
       onContinue={onDone}
     />
