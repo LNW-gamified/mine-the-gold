@@ -235,7 +235,9 @@ export default function FacilitatorPage() {
           </div>
         </header>
 
-        <section className="ore-card-subtle p-6" style={{ borderTopColor: "var(--nugget)" }}>
+        <section className="frame p-6">
+          <div className="bolt tl" /><div className="bolt tr" />
+          <div className="bolt bl" /><div className="bolt br" />
           <h2 className="font-bold mb-4 stencil text-sm">Live leaderboard</h2>
           {teams.length === 0 && <p className="text-text-dim text-sm">No teams have joined yet. Share the room code above.</p>}
           {teams.map((t, i) => {
@@ -262,7 +264,9 @@ export default function FacilitatorPage() {
           })}
         </section>
 
-        <section className="ore-card-subtle p-6 mt-6" style={{ borderTopColor: "var(--rock)" }}>
+        <section className="frame p-6 mt-6">
+          <div className="bolt tl" /><div className="bolt tr" />
+          <div className="bolt bl" /><div className="bolt br" />
           <button
             className="flex justify-between items-center w-full text-left"
             onClick={() => setInsightsOpen(!insightsOpen)}

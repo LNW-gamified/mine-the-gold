@@ -83,7 +83,10 @@ export default function JoinPage() {
     <main className="flex-1 relative flex items-center justify-center px-6 py-10">
       <HeroBackground />
       <div className="relative z-10 w-full max-w-4xl flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-10">
-        <form onSubmit={handleJoin} className="ore-card-subtle p-8 w-full max-w-sm shrink-0" style={{ borderTopColor: "var(--gold)" }}>
+        <form onSubmit={handleJoin} className="frame frame-compact p-8 w-full shrink-0">
+          <div className="bolt tl" /><div className="bolt tr" />
+          <div className="bolt bl" /><div className="bolt br" />
+
           <h1 className="text-2xl font-bold mb-1">Join the dig</h1>
           <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s room code and pick a team name.</p>
 
