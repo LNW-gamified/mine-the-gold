@@ -461,22 +461,21 @@ h1, h2, h3, .display {
   background: var(--surface-raised);
 }
 
-/* Game-complete celebration cart (app/play/page.tsx): each gold nugget pops
-   in with a staggered animation-delay set inline per circle. Plays once on
-   mount since CSS animations don't retrigger on re-render, only remount. */
-.cart-nugget {
-  transform-box: fill-box;
-  transform-origin: center;
-  opacity: 0;
-  animation: nugget-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+/* Game-complete celebration cart (app/play/page.tsx): a one-time scale/
+   bounce-in on mount, not a loop - CelebrationCart only ever renders once
+   per game-complete screen, so "plays once" falls out naturally from that
+   (no re-trigger guard needed, since a CSS animation doesn't restart on
+   re-render, only remount). */
+.cart-entrance {
+  animation: cartEntrance 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
 }
-@keyframes nugget-pop {
-  0% { opacity: 0; transform: scale(0); }
-  60% { opacity: 1; transform: scale(1.25); }
-  100% { opacity: 1; transform: scale(1); }
+@keyframes cartEntrance {
+  0% { transform: scale(0.6) translateY(30px); opacity: 0; }
+  60% { transform: scale(1.05) translateY(-6px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cart-nugget { animation: none; opacity: 1; }
+  .cart-entrance { animation: none; opacity: 1; }
 }
 
 /* ---- Leaderboard cart race (leaderboard-race.html's .lane/.track/.cart/

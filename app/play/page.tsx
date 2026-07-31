@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactElement } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { playTrack } from "@/lib/audioManager";
 import type { Team } from "@/lib/types";
@@ -10,41 +11,28 @@ import Round1Sort from "@/components/rounds/Round1Sort";
 import Round2Tunnel from "@/components/rounds/Round2Tunnel";
 import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
-import CartBody from "@/components/MineCart";
 import RivalTicker from "@/components/RivalTicker";
 import IdleLeaderboard from "@/components/IdleLeaderboard";
 import GameSummary from "@/components/GameSummary";
 import HeroBackground from "@/components/HeroBackground";
 import RoundRecap from "@/components/RoundRecap";
 
-// Purely celebratory: always ends up full and overflowing regardless of the
-// team's actual score, so the count/positions here are fixed, not derived
-// from points. Delays are staggered ~130ms apart per nugget.
-const CELEBRATION_NUGGETS = [
-  { cx: 11, cy: 13, r: 2.5, fill: "#fff2c4", delay: 0 },
-  { cx: 17, cy: 7, r: 3, fill: "#e8b13d", delay: 130 },
-  { cx: 23, cy: 4, r: 2.5, fill: "#fff2c4", delay: 260 },
-  { cx: 29, cy: 6, r: 3, fill: "#e8b13d", delay: 390 },
-  { cx: 34, cy: 12, r: 2, fill: "#fff2c4", delay: 520 },
-  { cx: 20, cy: 13, r: 2.5, fill: "#e8b13d", delay: 650 },
-];
-
+// Illustrated cart (near-square, ~1.05:1 within a 1024x1024 canvas), not the
+// shared SVG CartBody shape used by the facilitator leaderboard - that one's
+// 46:30 sizing doesn't fit this image. Bounces in once on mount via
+// .cart-entrance; this component only ever renders once per game-complete
+// screen, so there's no re-trigger to guard against.
 function CelebrationCart() {
   return (
-    <svg viewBox="0 0 46 30" width={230} height={150} className="mx-auto">
-      <CartBody />
-      {CELEBRATION_NUGGETS.map((n, i) => (
-        <circle
-          key={i}
-          className="cart-nugget"
-          cx={n.cx}
-          cy={n.cy}
-          r={n.r}
-          fill={n.fill}
-          style={{ animationDelay: `${n.delay}ms` }}
-        />
-      ))}
-    </svg>
+    <Image
+      src="/mine-cart.png"
+      alt=""
+      width={1024}
+      height={1024}
+      className="cart-entrance mx-auto"
+      style={{ width: "100%", maxWidth: 280, height: "auto" }}
+      priority
+    />
   );
 }
 
