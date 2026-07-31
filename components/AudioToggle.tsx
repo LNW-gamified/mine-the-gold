@@ -29,10 +29,9 @@ function IconSpeakerOff() {
 // from anywhere, including the homepage and join-page buttons this doesn't
 // own.
 export default function AudioToggle() {
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(() => isTrackPlaying());
 
   useEffect(() => {
-    setPlaying(isTrackPlaying());
     return onTrackChange(() => setPlaying(isTrackPlaying()));
   }, []);
 

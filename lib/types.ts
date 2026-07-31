@@ -63,8 +63,8 @@ export interface Submission {
   explanation: string | null;
 }
 
-// Sum of every round's maximum possible points: 39 (Round 1) + 12 (Round 2,
-// including the perfect-tunnel bonus) + 17 (Round 3) + 16 (Round 4) = 84.
+// Sum of every round's maximum possible points: 39 (Round 1) + 17 (Round 2)
+// + 12 (Round 3, including the perfect-tunnel bonus) + 16 (Round 4) = 84.
 export const MAX_POSSIBLE_SCORE = 84;
 
 export const ROUND_NAMES: Record<number, string> = {

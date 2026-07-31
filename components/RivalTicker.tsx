@@ -1,37 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSessionTeams } from "@/lib/useSessionTeams";
 
 export default function RivalTicker({ sessionId, myTeamId }: { sessionId: string; myTeamId: string }) {
   const teams = useSessionTeams(sessionId);
   const [toast, setToast] = useState<string | null>(null);
-  const prevRankRef = useRef<number | null>(null);
-  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [prevRank, setPrevRank] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (teams.length < 2) return;
-
+  // Detected during render rather than in an effect - the recommended React
+  // pattern for adjusting state off a prop/dependency change without an
+  // extra render round-trip. The state guard fires this only once per actual
+  // rank change, same as the effect + dependency array it replaces.
+  if (teams.length >= 2) {
     const myIndex = teams.findIndex((t) => t.id === myTeamId);
-    if (myIndex === -1) return;
-    const myRank = myIndex + 1;
-
-    const prevRank = prevRankRef.current;
-    if (prevRank !== null && myRank > prevRank) {
-      // Someone passed us. Find who's now just ahead.
-      const overtaker = teams[myIndex - 1];
-      if (overtaker) {
-        setToast(`${overtaker.name} just passed you. ${overtaker.score} points and climbing.`);
-        if (hideTimer.current) clearTimeout(hideTimer.current);
-        hideTimer.current = setTimeout(() => setToast(null), 5000);
+    if (myIndex !== -1) {
+      const myRank = myIndex + 1;
+      if (prevRank !== myRank) {
+        setPrevRank(myRank);
+        if (prevRank !== null && myRank > prevRank) {
+          // Someone passed us. Find who's now just ahead.
+          const overtaker = teams[myIndex - 1];
+          if (overtaker) {
+            setToast(`${overtaker.name} just passed you. ${overtaker.score} points and climbing.`);
+          }
+        }
       }
     }
-    prevRankRef.current = myRank;
-  }, [teams, myTeamId]);
+  }
 
+  // Auto-hides whatever toast is currently showing. Keying on `toast` means
+  // React's own cleanup-before-rerun handles resetting the timer on a fresh
+  // overtake the same way the old manual clearTimeout+reassign did.
   useEffect(() => {
-    return () => { if (hideTimer.current) clearTimeout(hideTimer.current); };
-  }, []);
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 5000);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   if (!toast) return null;
 

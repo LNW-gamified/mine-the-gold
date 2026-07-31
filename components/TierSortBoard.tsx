@@ -96,6 +96,7 @@ export default function TierSortBoard({
   const [phase, setPhase] = useState<"sorting" | "revealed">("sorting");
   const [results, setResults] = useState<SortResult[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [lockingIn, setLockingIn] = useState(false);
 
   const allPlaced = items.every((i) => placements[i.id]);
 
@@ -129,6 +130,13 @@ export default function TierSortBoard({
     });
     const total = computed.reduce((s, r) => s + r.points, 0);
     await onSubmit(computed, total);
+
+    // A deliberate beat between "you're done placing" and "here's how you
+    // did" - text-only, reuses the existing disabled button state.
+    setLockingIn(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setLockingIn(false);
+
     setResults(computed);
     setPhase("revealed");
     // One-shot effect, not part of the persistent-track system in
@@ -294,7 +302,7 @@ export default function TierSortBoard({
 
       <div className="text-center">
         <button className="btn btn-gold" disabled={!allPlaced || submitting} onClick={checkResults}>
-          {submitting ? "Checking..." : "Check results"}
+          {lockingIn ? "Locking in..." : submitting ? "Checking..." : "Check results"}
         </button>
       </div>
     </div>

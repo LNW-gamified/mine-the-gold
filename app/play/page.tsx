@@ -17,7 +17,7 @@ import HeroBackground from "@/components/HeroBackground";
 import RoundRecap from "@/components/RoundRecap";
 
 // Set to false to lock rounds back to sequential progression for a real session.
-const DEV_MODE_FREE_NAV = true;
+const DEV_MODE_FREE_NAV = false;
 
 // Purely celebratory: always ends up full and overflowing regardless of the
 // team's actual score, so the count/positions here are fixed, not derived
@@ -128,8 +128,12 @@ const TRACK_HEIGHT = SLOT_HEIGHT * (NODE_COUNT - 1); // 432
 
 export default function PlayPage() {
   const router = useRouter();
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [teamId, setTeamId] = useState<string | null>(null);
+  const [sessionId] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : localStorage.getItem("mtg_session_id")
+  );
+  const [teamId] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : localStorage.getItem("mtg_team_id")
+  );
   const [team, setTeam] = useState<Team | null>(null);
   // Which round's content is currently shown - separate from team.current_round,
   // which is the real, database-backed progression and never changes from a
@@ -137,17 +141,11 @@ export default function PlayPage() {
   // (new round unlocked), but otherwise persists so reviewing a completed
   // round doesn't fight with realtime score updates re-rendering the page.
   const [viewingRound, setViewingRound] = useState<number | null>(null);
+  const [syncedRound, setSyncedRound] = useState<number | null>(null);
 
   useEffect(() => {
-    const sid = localStorage.getItem("mtg_session_id");
-    const tid = localStorage.getItem("mtg_team_id");
-    if (!sid || !tid) {
-      router.push("/join");
-      return;
-    }
-    setSessionId(sid);
-    setTeamId(tid);
-  }, [router]);
+    if (!sessionId || !teamId) router.push("/join");
+  }, [sessionId, teamId, router]);
 
   useEffect(() => {
     if (!teamId) return;
@@ -165,9 +163,14 @@ export default function PlayPage() {
     return () => { supabase.removeChannel(channel); };
   }, [teamId]);
 
-  useEffect(() => {
-    if (team) setViewingRound(team.current_round);
-  }, [team?.current_round]);
+  // Adjusted during render rather than in an effect - the recommended React
+  // pattern for syncing state from a changing prop without an extra render
+  // round-trip. The state guard makes this fire only once per actual
+  // current_round change, same as the effect + dependency array it replaces.
+  if (team && syncedRound !== team.current_round) {
+    setSyncedRound(team.current_round);
+    setViewingRound(team.current_round);
+  }
 
   async function advanceRound() {
     if (!teamId || !team) return;

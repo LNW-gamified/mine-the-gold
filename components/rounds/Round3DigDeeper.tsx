@@ -48,7 +48,7 @@ export default function Round3DigDeeper({
       return {
         session_id: sessionId,
         team_id: teamId,
-        round: 3,
+        round: 2,
         card_id: dirtCard!.id,
         answer_text: prompt.question_text,
         correct: r.correct,

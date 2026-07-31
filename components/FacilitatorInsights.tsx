@@ -13,6 +13,17 @@ interface ItemStat {
   explanation: string | null;
 }
 
+// Raw shape of a submissions row with its embedded card - see the identical
+// note in GameSummary.tsx/RoundRecap.tsx, which read the same kind of query.
+interface RawInsightRow {
+  round: number;
+  card_id: string | null;
+  answer_text: string | null;
+  correct: boolean | null;
+  explanation: string | null;
+  cards: { text: string } | { text: string }[] | null;
+}
+
 export default function FacilitatorInsights({ sessionId }: { sessionId: string }) {
   const [stats, setStats] = useState<ItemStat[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,8 +37,9 @@ export default function FacilitatorInsights({ sessionId }: { sessionId: string }
 
       if (data) {
         const grouped: Record<string, ItemStat> = {};
-        for (const row of data as any[]) {
-          const text = row.cards?.text ?? row.answer_text ?? "—";
+        for (const row of data as RawInsightRow[]) {
+          const cardText = Array.isArray(row.cards) ? row.cards[0]?.text : row.cards?.text;
+          const text = cardText ?? row.answer_text ?? "—";
           const key = `${row.round}:${row.card_id ?? row.answer_text}`;
           if (!grouped[key]) {
             grouped[key] = { key, text, round: row.round, total: 0, correctCount: 0, explanation: row.explanation };

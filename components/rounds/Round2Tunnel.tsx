@@ -53,7 +53,7 @@ export default function Round2Tunnel({
       return {
         session_id: sessionId,
         team_id: teamId,
-        round: 2,
+        round: 3,
         answer_text: item.label,
         correct: r.correct,
         points_awarded: r.points,
