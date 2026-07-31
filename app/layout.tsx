@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto_Slab, Inter, Rye, Oswald } from "next/font/google";
+import AudioToggle from "@/components/AudioToggle";
 import "./globals.css";
 
 const slab = Roboto_Slab({
@@ -37,7 +38,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${slab.variable} ${body.variable} ${rye.variable} ${oswald.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-bg text-text">{children}</body>
+      <body className="min-h-full flex flex-col bg-bg text-text">
+        {children}
+        <AudioToggle />
+      </body>
     </html>
   );
 }

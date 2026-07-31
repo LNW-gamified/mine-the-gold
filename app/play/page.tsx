@@ -13,7 +13,6 @@ import CartBody from "@/components/MineCart";
 import RivalTicker from "@/components/RivalTicker";
 import IdleLeaderboard from "@/components/IdleLeaderboard";
 import GameSummary from "@/components/GameSummary";
-import AmbientAudio from "@/components/AmbientAudio";
 import HeroBackground from "@/components/HeroBackground";
 import RoundRecap from "@/components/RoundRecap";
 
@@ -201,7 +200,6 @@ export default function PlayPage() {
   return (
     <>
       <RivalTicker sessionId={sessionId} myTeamId={teamId} />
-      <AmbientAudio />
       <main className="flex-1 relative flex items-start justify-center px-4 py-10 sm:py-16">
         <HeroBackground />
         <div className="frame w-full relative z-10">

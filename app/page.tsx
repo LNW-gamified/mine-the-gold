@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import HeroBackground from "@/components/HeroBackground";
+import { playTrack } from "@/lib/audioManager";
 
 export default function Home() {
   return (
@@ -21,8 +24,12 @@ export default function Home() {
             compelling reason a prospect needs to change. Dig past the surface.
             Most reps pan for gold. Elite reps mine for it.
           </p>
-          <Link href="/join" className="btn btn-gold inline-flex px-10 py-4 text-base">
-            Join as a team
+          <Link
+            href="/join"
+            onClick={() => playTrack("/sounds/team-song.mp3", { loop: true, volume: 0.4 })}
+            className="btn btn-gold inline-flex px-10 py-4 text-base"
+          >
+            Start Digging
           </Link>
         </div>
       </div>

@@ -1,0 +1,80 @@
+// A simple module-level singleton, not tied to any component's lifecycle.
+// This is what lets a track started on one page keep playing after
+// navigating to the next (a plain <audio> tag inside a page component
+// would be destroyed the moment that page unmounts).
+
+let currentAudio: HTMLAudioElement | null = null;
+let currentSrc: string | null = null;
+
+// Remembers the most recently requested track/options even after
+// stopTrack() clears currentAudio, so a mute toggle elsewhere can restart
+// "whatever was playing" without needing to know the track itself.
+let lastTrack: { src: string; opts: { loop: boolean; volume: number } } | null = null;
+
+// Lets UI outside the call site (e.g. a mute button mounted in the root
+// layout) know playback state changed, since this module has no React
+// state of its own to trigger a re-render.
+type Listener = () => void;
+const listeners = new Set<Listener>();
+function notify() {
+  listeners.forEach((l) => l());
+}
+export function onTrackChange(listener: Listener): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+export function playTrack(
+  src: string,
+  { loop = true, volume = 0.35 }: { loop?: boolean; volume?: number } = {}
+) {
+  if (typeof window === "undefined") return;
+
+  lastTrack = { src, opts: { loop, volume } };
+
+  // Already playing this exact track, don't restart it from the beginning.
+  if (currentSrc === src && currentAudio && !currentAudio.paused) return;
+
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.src = "";
+  }
+
+  const audio = new Audio(src);
+  audio.loop = loop;
+  audio.volume = volume;
+  // Browsers can still block this even right after a click in rare cases
+  // (e.g. a click that also triggers a synchronous navigation before the
+  // promise resolves). Fail silently rather than throwing.
+  audio.play().catch(() => {});
+
+  currentAudio = audio;
+  currentSrc = src;
+  notify();
+}
+
+export function stopTrack() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.src = "";
+  }
+  currentAudio = null;
+  currentSrc = null;
+  notify();
+}
+
+export function getLastTrack() {
+  return lastTrack;
+}
+
+export function setTrackVolume(volume: number) {
+  if (currentAudio) currentAudio.volume = volume;
+}
+
+export function isTrackPlaying(): boolean {
+  return !!currentAudio && !currentAudio.paused;
+}
+
+export function getCurrentTrackSrc(): string | null {
+  return currentSrc;
+}

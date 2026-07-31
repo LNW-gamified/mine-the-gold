@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import HeroBackground from "@/components/HeroBackground";
+import { playTrack } from "@/lib/audioManager";
 
 export default function JoinPage() {
   const router = useRouter();
@@ -73,6 +74,7 @@ export default function JoinPage() {
     localStorage.setItem("mtg_session_id", session.id);
     localStorage.setItem("mtg_team_id", teamId);
     localStorage.setItem("mtg_team_name", name);
+    playTrack("/sounds/ambient-cave.mp3", { loop: true, volume: 0.25 });
     router.push("/play");
   }
 
