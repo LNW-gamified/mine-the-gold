@@ -75,7 +75,7 @@ export default function JoinPage() {
     localStorage.setItem("mtg_session_id", session.id);
     localStorage.setItem("mtg_team_id", teamId);
     localStorage.setItem("mtg_team_name", name);
-    playTrack("/sounds/ambient-cave.mp3", { loop: true, volume: 0.25 });
+    playTrack("/sounds/ambient-cave.mp3", { loop: true, volume: 0.7 });
     router.push("/play");
   }
 
