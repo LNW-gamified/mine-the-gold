@@ -15,6 +15,7 @@ import IdleLeaderboard from "@/components/IdleLeaderboard";
 import GameSummary from "@/components/GameSummary";
 import AmbientAudio from "@/components/AmbientAudio";
 import HeroBackground from "@/components/HeroBackground";
+import RoundRecap from "@/components/RoundRecap";
 
 // Set to false to lock rounds back to sequential progression for a real session.
 const DEV_MODE_FREE_NAV = true;
@@ -95,6 +96,16 @@ function IconDiamond() {
   );
 }
 
+function IconTrophy() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M7 4h10v3a5 5 0 0 1-10 0V4Z" />
+      <path d="M7 5H4a3 3 0 0 0 3 4M17 5h3a3 3 0 0 1-3 4" />
+      <path d="M12 12v3M9 19h6M10 19l.5-4h3l.5 4" />
+    </svg>
+  );
+}
+
 const ROUND_ICONS: Record<number, () => ReactElement> = {
   1: IconShovel,
   2: IconMagnifier,
@@ -108,18 +119,25 @@ const ROUND_ICONS: Record<number, () => ReactElement> = {
 // node-wrap margin-bottom. The mockup hardcodes rail-track-fill to a static
 // 0px placeholder and its own top/bottom insets don't correspond to any of
 // these numbers, so the real top/height are computed here instead.
-const ROUND_COUNT = 4;
+// 5 nodes total: the 4 rounds plus the "Score" node at the end.
+const NODE_COUNT = 5;
 const RAIL_PADDING_TOP = 26;
 const NODE_SIZE = 46;
 const SLOT_HEIGHT = NODE_SIZE + 8 + 10 + 44; // 108
 const FIRST_NODE_CENTER = RAIL_PADDING_TOP + NODE_SIZE / 2; // 49
-const TRACK_HEIGHT = SLOT_HEIGHT * (ROUND_COUNT - 1); // 324
+const TRACK_HEIGHT = SLOT_HEIGHT * (NODE_COUNT - 1); // 432
 
 export default function PlayPage() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [teamId, setTeamId] = useState<string | null>(null);
   const [team, setTeam] = useState<Team | null>(null);
+  // Which round's content is currently shown - separate from team.current_round,
+  // which is the real, database-backed progression and never changes from a
+  // rail click. Resets to match current_round whenever that actually changes
+  // (new round unlocked), but otherwise persists so reviewing a completed
+  // round doesn't fight with realtime score updates re-rendering the page.
+  const [viewingRound, setViewingRound] = useState<number | null>(null);
 
   useEffect(() => {
     const sid = localStorage.getItem("mtg_session_id");
@@ -148,6 +166,10 @@ export default function PlayPage() {
     return () => { supabase.removeChannel(channel); };
   }, [teamId]);
 
+  useEffect(() => {
+    if (team) setViewingRound(team.current_round);
+  }, [team?.current_round]);
+
   async function advanceRound() {
     if (!teamId || !team) return;
     const nextRound = team.current_round + 1;
@@ -172,8 +194,9 @@ export default function PlayPage() {
   }
 
   const round = team.current_round;
-  const doneSegments = Math.min(Math.max(round - 1, 0), ROUND_COUNT - 1);
-  const fillHeight = (doneSegments / (ROUND_COUNT - 1)) * TRACK_HEIGHT;
+  const displayRound = viewingRound ?? round;
+  const doneSegments = Math.min(Math.max(round - 1, 0), NODE_COUNT - 1);
+  const fillHeight = (doneSegments / (NODE_COUNT - 1)) * TRACK_HEIGHT;
 
   return (
     <>
@@ -192,11 +215,23 @@ export default function PlayPage() {
 
               {[1, 2, 3, 4].map((r) => {
                 const Icon = ROUND_ICONS[r];
+                const completed = round > r;
+                // A completed round always opens its read-only recap, dev
+                // mode or not - that's the real feature being tested here.
+                // DEV_MODE additionally allows jumping ahead to a round not
+                // yet reached, for testing; the current round stays
+                // non-interactive either way (nothing to jump to or recap).
+                const canJumpAhead = DEV_MODE_FREE_NAV && r !== round;
+                const onClick = completed
+                  ? () => setViewingRound(r)
+                  : canJumpAhead
+                  ? () => jumpToRound(r)
+                  : undefined;
                 return (
                   <div
                     key={r}
-                    className={`node-wrap ${DEV_MODE_FREE_NAV ? "cursor-pointer" : ""}`}
-                    onClick={DEV_MODE_FREE_NAV ? () => jumpToRound(r) : undefined}
+                    className={`node-wrap ${(completed || canJumpAhead) ? "cursor-pointer" : ""}`}
+                    onClick={onClick}
                   >
                     <div className={`node ${round > r ? "done" : round === r ? "active" : ""}`}>
                       <Icon />
@@ -205,13 +240,26 @@ export default function PlayPage() {
                   </div>
                 );
               })}
+
+              {/* Score node: grayed/non-interactive until the game is actually
+                  complete, then opens the same GameSummary recap shown below
+                  on the natural game-complete screen. */}
+              <div
+                className={`node-wrap ${round >= 5 ? "cursor-pointer" : ""}`}
+                onClick={round >= 5 ? () => setViewingRound(5) : undefined}
+              >
+                <div className={`node ${round >= 5 ? "active" : ""}`}>
+                  <IconTrophy />
+                </div>
+                <div className="node-label">Score</div>
+              </div>
             </div>
 
             <div className="flex-1 min-w-0 flex flex-col pt-[30px] px-4 sm:px-11 pb-10">
               <div className="plaque">
                 <div>
                   <p className="kicker">{team.name}</p>
-                  <h1>{ROUND_NAMES[round]}</h1>
+                  <h1>{ROUND_NAMES[displayRound]}</h1>
                 </div>
                 <div className="score-plate">
                   <div className="lbl">Score</div>
@@ -220,7 +268,7 @@ export default function PlayPage() {
               </div>
 
               <div className="flex-1">
-                {round === 0 && (
+                {displayRound === 0 && (
                   <div className="text-center py-12">
                     <h2 className="text-2xl font-bold mb-3">Ready to dig, {team.name}?</h2>
                     <p className="text-text-dim mb-8">
@@ -243,11 +291,27 @@ export default function PlayPage() {
                     )}
                   </div>
                 )}
-                {round === 1 && <Round1Sort sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-                {round === 2 && <Round3DigDeeper sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-                {round === 3 && <Round2Tunnel sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-                {round === 4 && <Round4FoolsGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />}
-                {round >= 5 && (
+                {displayRound === 1 && (
+                  displayRound === round
+                    ? <Round1Sort sessionId={sessionId} teamId={teamId} onDone={advanceRound} />
+                    : <RoundRecap teamId={teamId} round={1} />
+                )}
+                {displayRound === 2 && (
+                  displayRound === round
+                    ? <Round3DigDeeper sessionId={sessionId} teamId={teamId} onDone={advanceRound} />
+                    : <RoundRecap teamId={teamId} round={2} />
+                )}
+                {displayRound === 3 && (
+                  displayRound === round
+                    ? <Round2Tunnel sessionId={sessionId} teamId={teamId} onDone={advanceRound} />
+                    : <RoundRecap teamId={teamId} round={3} />
+                )}
+                {displayRound === 4 && (
+                  displayRound === round
+                    ? <Round4FoolsGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />
+                    : <RoundRecap teamId={teamId} round={4} />
+                )}
+                {displayRound >= 5 && (
                   <div className="text-center py-12">
                     <CelebrationCart />
                     <GameSummary teamId={teamId} finalScore={team.score} />

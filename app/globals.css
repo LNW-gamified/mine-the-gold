@@ -175,6 +175,28 @@ h1, h2, h3, .display {
 .bin-gold .bin-icon { background: rgba(0,0,0,0.15); }
 .bin-gold .bin-icon svg { stroke: #4a3208; }
 
+/* Dedicated "add here" tap target inside a bin, always rendered after the
+   placed-item chips so there's never a moment where a full bin has no
+   unambiguous spot left to add another item (the chips themselves are a
+   remove target via stopPropagation, not an add target). */
+.add-target {
+  min-width: 26px;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255,255,255,0.25);
+  border-radius: 4px;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+.add-target:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
 /* ---- Metal-and-rivet game frame (round1-mockup-v3.html's .frame/.bolt) ----
    position/z-index for stacking above CaveBackground is handled by the
    relative z-10 <main> wrapper in app/play/page.tsx; this only needs
@@ -440,11 +462,22 @@ h1, h2, h3, .display {
 }
 
 /* ---- Leaderboard cart race (leaderboard-race.html's .lane/.track/.cart/
-   .finish/.lead-tag), reused on the facilitator dashboard. .cart's left
-   position is set inline per team; the transition animates it smoothly
-   as scores update live instead of snapping. */
+   .finish), reused on the facilitator dashboard. .cart's left position is
+   set inline per team; the transition animates it smoothly as scores
+   update live instead of snapping. */
 .lane { margin-bottom: 26px; }
 .lane:last-child { margin-bottom: 0; }
+/* #1 team gets a tinted background across the whole row instead of a
+   separate "Leading" tag - bleeds slightly wider than the row's own
+   content via a negative margin/padding pair so it still lines up with
+   the other lanes. */
+.lane.first {
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-left: -12px;
+  margin-right: -12px;
+}
 .lane-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
 .lane-name { font-family: var(--font-oswald), 'Oswald', sans-serif; font-weight: 600; font-size: 14px; letter-spacing: 0.05em; }
 .lane-rank { color: #fff2c4; font-family: var(--font-oswald), 'Oswald', sans-serif; font-weight: 700; margin-right: 8px; }
@@ -477,13 +510,6 @@ h1, h2, h3, .display {
   background: repeating-linear-gradient(180deg, #fff2c4 0 6px, #1a130b 6px 12px);
 }
 
-.lead-tag {
-  position: absolute; top: -22px; left: 0;
-  font-family: var(--font-oswald), 'Oswald', sans-serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: #fff2c4; background: #7a5510; padding: 2px 8px; border-radius: 3px;
-  opacity: 0;
-}
-.lane.first .lead-tag { opacity: 1; }
 
 input, select, textarea {
   background: var(--surface);

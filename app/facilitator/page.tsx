@@ -189,7 +189,6 @@ export default function FacilitatorPage() {
                   <div className="rail-ties" />
                   <div className="finish" />
                   <div className="cart" style={{ left: `calc(${pos}% - 46px)` }}>
-                    {i === 0 && <div className="lead-tag">Leading</div>}
                     <CartSvg tier={tier} />
                   </div>
                 </div>

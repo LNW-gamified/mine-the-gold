@@ -215,6 +215,13 @@ export default function TierSortBoard({
                       {i.label}
                     </div>
                   ))}
+                  <div
+                    onClick={(e) => { e.stopPropagation(); placeIn(bin.key); }}
+                    className="add-target shrink-0"
+                    aria-label={`Add to ${bin.label}`}
+                  >
+                    +
+                  </div>
                 </div>
               </button>
             );
@@ -247,6 +254,13 @@ export default function TierSortBoard({
                       {i.label}
                     </div>
                   ))}
+                  <div
+                    onClick={(e) => { e.stopPropagation(); placeIn(bin.key); }}
+                    className="add-target"
+                    aria-label={`Add to ${bin.label}`}
+                  >
+                    +
+                  </div>
                 </div>
               </button>
             );
