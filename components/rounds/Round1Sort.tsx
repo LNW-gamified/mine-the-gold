@@ -11,17 +11,19 @@ const CODES = [
   "nugget_01", "nugget_02", "nugget_03",
 ];
 
-const BINS = [
-  { key: "dirt", label: "Dirt", colorVar: "dirt" },
-  { key: "rock", label: "Rock", colorVar: "rock" },
-  { key: "gold", label: "Gold", colorVar: "gold" },
-];
-
+// Category codes don't map 1:1 to bin keys here: the deepest tier uses
+// gold_nugget content but is labeled and scored as "Gold" for this round.
 const BIN_FOR_CATEGORY: Record<string, string> = {
   dirt: "dirt",
   rock: "rock",
   gold_nugget: "gold",
 };
+
+const BINS = [
+  { key: "dirt", label: "Dirt", colorVar: "dirt" },
+  { key: "rock", label: "Rock", colorVar: "rock" },
+  { key: "gold", label: "Gold", colorVar: "gold" },
+];
 
 export default function Round1Sort({
   sessionId,
@@ -61,6 +63,7 @@ export default function Round1Sort({
         correct: r.correct,
         points_awarded: r.points,
         facilitator_scored: true,
+        explanation: card.explanation,
       };
     });
     await supabase.from("submissions").insert(rows);
@@ -73,10 +76,10 @@ export default function Round1Sort({
     <TierSortBoard
       items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: BIN_FOR_CATEGORY[c.category], points: c.points, explanation: c.explanation ?? undefined }))}
       bins={BINS}
+      layout="stack"
       instructions="Nine things a prospect might say. Sort each one into the layer it actually belongs in: surface complaint on top, business problem in the middle, real economic impact at the bottom."
       onSubmit={handleSubmit}
       onContinue={onDone}
-      layout="stack"
     />
   );
 }

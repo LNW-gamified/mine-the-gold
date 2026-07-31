@@ -50,15 +50,19 @@ export default function Round2Tunnel({
   async function handleSubmit(results: SortResult[], total: number) {
     const perfect = results.every((r) => r.correct);
     const bonus = perfect ? 2 : 0;
-    const rows = results.map((r) => ({
-      session_id: sessionId,
-      team_id: teamId,
-      round: 2,
-      answer_text: JSON.stringify({ scenario: scenario!.title, item: r.itemId, placed: r.binKey }),
-      correct: r.correct,
-      points_awarded: r.points,
-      facilitator_scored: true,
-    }));
+    const rows = results.map((r) => {
+      const item = items.find((i) => i.id === r.itemId)!;
+      return {
+        session_id: sessionId,
+        team_id: teamId,
+        round: 2,
+        answer_text: item.label,
+        correct: r.correct,
+        points_awarded: r.points,
+        facilitator_scored: true,
+        explanation: item.explanation ?? null,
+      };
+    });
     await supabase.from("submissions").insert(rows);
     const finalTotal = total + bonus;
     if (finalTotal > 0) await supabase.rpc("add_team_points", { p_team_id: teamId, p_delta: finalTotal });

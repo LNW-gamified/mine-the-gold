@@ -11,6 +11,9 @@ import Round3DigDeeper from "@/components/rounds/Round3DigDeeper";
 import Round4FoolsGold from "@/components/rounds/Round4FoolsGold";
 import CaveBackground from "@/components/CaveBackground";
 import CartBody from "@/components/MineCart";
+import RivalTicker from "@/components/RivalTicker";
+import IdleLeaderboard from "@/components/IdleLeaderboard";
+import GameSummary from "@/components/GameSummary";
 
 // Set to false to lock rounds back to sequential progression for a real session.
 const DEV_MODE_FREE_NAV = true;
@@ -174,6 +177,7 @@ export default function PlayPage() {
   return (
     <>
       <CaveBackground />
+      <RivalTicker sessionId={sessionId} myTeamId={teamId} />
       <main className="flex-1 flex items-start justify-center px-4 py-10 sm:py-16 relative z-10">
         <div className="frame w-full">
           <div className="bolt tl" /><div className="bolt tr" />
@@ -244,9 +248,8 @@ export default function PlayPage() {
                 {round >= 5 && (
                   <div className="text-center py-12">
                     <CelebrationCart />
-                    <h2 className="text-3xl font-bold text-nugget mb-2 stencil mt-6">The dig is done</h2>
-                    <p className="text-text-dim mb-2">Final score: {team.score} points</p>
-                    <p className="text-text-dim text-sm">Check the facilitator&apos;s screen for how your team stacked up.</p>
+                    <GameSummary teamId={teamId} finalScore={team.score} />
+                    <IdleLeaderboard sessionId={sessionId} myTeamId={teamId} />
                   </div>
                 )}
               </div>

@@ -54,6 +54,7 @@ export default function Round3DigDeeper({
         correct: r.correct,
         points_awarded: r.points,
         facilitator_scored: true,
+        explanation: prompt.explanation,
       };
     });
     await supabase.from("submissions").insert(rows);

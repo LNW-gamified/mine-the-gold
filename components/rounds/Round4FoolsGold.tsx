@@ -50,6 +50,7 @@ export default function Round4FoolsGold({
         correct: r.correct,
         points_awarded: r.points,
         facilitator_scored: true,
+        explanation: card.explanation,
       };
     });
     await supabase.from("submissions").insert(rows);
