@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import HeroBackground from "@/components/HeroBackground";
-import { playTrack } from "@/lib/audioManager";
+import { playTrack, setTrackVolume } from "@/lib/audioManager";
 
 export default function JoinPage() {
   const router = useRouter();
@@ -13,6 +13,15 @@ export default function JoinPage() {
   const [teamName, setTeamName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Ducks the team-song (still playing from the homepage's "Start Digging"
+  // click at 0.4) down to 0.3 specifically on this screen, so the one-shot
+  // voiceover reads more clearly against it. No need to restore it -
+  // handleJoin's own playTrack(ambient-cave, ...) call takes over with its
+  // own independent volume once the user submits.
+  useEffect(() => {
+    setTrackVolume(0.3);
+  }, []);
 
   async function handleJoin(e: React.FormEvent) {
     e.preventDefault();
@@ -114,8 +123,11 @@ export default function JoinPage() {
         {/* Purely a visual/audio moment while the team fills in the form -
             no interaction, no tooltip. The arrival voiceover is fired from
             the homepage's "Start Digging" click (lib/audioManager.ts), not
-            from here, so it never replays on a plain reload of this page. */}
-        <div className="prospector-wrap" aria-hidden="true">
+            from here, so it never replays on a plain reload of this page.
+            sm:order-first only flips this to the left of the form on wider
+            screens - on mobile it stays in DOM order (after the form, i.e.
+            below it), unchanged from before. */}
+        <div className="prospector-wrap sm:order-first" aria-hidden="true">
           <div className="prospector-glow" />
           <Image src="/prospector.png" alt="" width={1024} height={1024} className="prospector-img" priority />
         </div>
