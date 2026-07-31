@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { createClient as createAuthClient } from "@/lib/supabase/client";
 import type { Session, Team } from "@/lib/types";
 import { MAX_POSSIBLE_SCORE } from "@/lib/types";
 import CartBody from "@/components/MineCart";
@@ -40,6 +42,7 @@ function CartSvg({ tier }: { tier: "full" | "medium" | "empty" }) {
 }
 
 export default function FacilitatorPage() {
+  const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [label, setLabel] = useState("");
   const [pastSessions, setPastSessions] = useState<Session[]>([]);
@@ -118,6 +121,13 @@ export default function FacilitatorPage() {
     if (data) setDevMode(data.dev_mode);
   }
 
+  async function logout() {
+    const authClient = createAuthClient();
+    await authClient.auth.signOut();
+    router.push("/facilitator/login");
+    router.refresh();
+  }
+
   async function endSession() {
     if (!session) return;
     await supabase.from("sessions").update({ active: false }).eq("id", session.id);
@@ -136,13 +146,14 @@ export default function FacilitatorPage() {
       <main className="flex-1 relative flex flex-col items-center px-6 py-16">
         <HeroBackground />
         <div className="max-w-md w-full relative z-10">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end items-center gap-3 mb-4">
             <button
               className={`btn text-xs ${devMode ? "btn-gold" : "btn-ghost"}`}
               onClick={toggleDevMode}
             >
               Dev mode: {devMode ? "ON" : "OFF"}
             </button>
+            <button className="text-xs text-text-dim underline" onClick={logout}>Log out</button>
           </div>
           <div className="ore-card-subtle p-8 mb-8" style={{ borderTopColor: "var(--gold)" }}>
             <h1 className="text-2xl font-bold mb-1 stencil">Start a session</h1>
@@ -211,6 +222,7 @@ export default function FacilitatorPage() {
               Dev mode: {devMode ? "ON" : "OFF"}
             </button>
             <button className="btn btn-ghost text-sm" onClick={endSession}>End session</button>
+            <button className="btn btn-ghost text-sm" onClick={logout}>Log out</button>
           </div>
         </header>
 
