@@ -34,7 +34,7 @@ const CART_NUGGETS: Record<"full" | "medium" | "empty", { cx: number; cy: number
 function CartSvg({ tier }: { tier: "full" | "medium" | "empty" }) {
   return (
     <svg viewBox="0 0 46 30">
-      <CartBody />
+      <CartBody bodyFill="var(--gold)" bodyStroke="var(--nugget)" panelFill="#8a6b1f" />
       {CART_NUGGETS[tier].map((n, i) => (
         <circle key={i} cx={n.cx} cy={n.cy} r={n.r} fill={n.fill} />
       ))}
@@ -235,51 +235,53 @@ export default function FacilitatorPage() {
           </div>
         </header>
 
-        <section className="frame p-6">
-          <div className="bolt tl" /><div className="bolt tr" />
-          <div className="bolt bl" /><div className="bolt br" />
-          <h2 className="font-bold mb-4 stencil text-sm">Live leaderboard</h2>
-          {teams.length === 0 && <p className="text-text-dim text-sm">No teams have joined yet. Share the room code above.</p>}
-          {teams.map((t, i) => {
-            const pos = Math.min((t.score / MAX_POSSIBLE_SCORE) * 100, 100);
-            const tier = i === 0 ? "full" : i === 1 ? "medium" : "empty";
-            return (
-              <div key={t.id} className={`lane ${i === 0 ? "first" : ""}`}>
-                <div className="lane-head">
-                  <span className="lane-name">
-                    <span className="lane-rank">{i + 1}.</span>
-                    {t.name}
-                  </span>
-                  <span className="lane-score">{t.score}</span>
-                </div>
-                <div className="track">
-                  <div className="rail-ties" />
-                  <div className="finish" />
-                  <div className="cart" style={{ left: `calc(${pos}% - 46px)` }}>
-                    <CartSvg tier={tier} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <section className="frame p-6">
+            <div className="bolt tl" /><div className="bolt tr" />
+            <div className="bolt bl" /><div className="bolt br" />
+            <h2 className="font-bold mb-4 stencil text-sm">Live leaderboard</h2>
+            {teams.length === 0 && <p className="text-text-dim text-sm">No teams have joined yet. Share the room code above.</p>}
+            {teams.map((t, i) => {
+              const pos = Math.min((t.score / MAX_POSSIBLE_SCORE) * 100, 100);
+              const tier = i === 0 ? "full" : i === 1 ? "medium" : "empty";
+              return (
+                <div key={t.id} className={`lane ${i === 0 ? "first" : ""}`}>
+                  <div className="lane-head">
+                    <span className="lane-name">
+                      <span className="lane-rank">{i + 1}.</span>
+                      {t.name}
+                    </span>
+                    <span className="lane-score">{t.score}</span>
+                  </div>
+                  <div className="track">
+                    <div className="rail-ties" />
+                    <div className="finish" />
+                    <div className="cart" style={{ left: `max(0px, calc(${pos}% - 46px))` }}>
+                      <CartSvg tier={tier} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </section>
+              );
+            })}
+          </section>
 
-        <section className="frame p-6 mt-6">
-          <div className="bolt tl" /><div className="bolt tr" />
-          <div className="bolt bl" /><div className="bolt br" />
-          <button
-            className="flex justify-between items-center w-full text-left"
-            onClick={() => setInsightsOpen(!insightsOpen)}
-          >
-            <h2 className="font-bold stencil text-sm">Coaching insights</h2>
-            <span className="text-xs text-text-dim underline">{insightsOpen ? "Hide" : "Show"}</span>
-          </button>
-          {insightsOpen && (
-            <div className="mt-4">
-              <FacilitatorInsights sessionId={session.id} />
-            </div>
-          )}
-        </section>
+          <section className="frame p-6">
+            <div className="bolt tl" /><div className="bolt tr" />
+            <div className="bolt bl" /><div className="bolt br" />
+            <button
+              className="flex justify-between items-center w-full gap-2 text-left"
+              onClick={() => setInsightsOpen(!insightsOpen)}
+            >
+              <h2 className="font-bold stencil text-sm">Coaching insights</h2>
+              <span className="text-xs text-text-dim underline shrink-0">{insightsOpen ? "Hide" : "Show"}</span>
+            </button>
+            {insightsOpen && (
+              <div className="mt-4">
+                <FacilitatorInsights sessionId={session.id} />
+              </div>
+            )}
+          </section>
+        </div>
       </div>
     </main>
   );
