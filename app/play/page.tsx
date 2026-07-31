@@ -14,6 +14,7 @@ import CartBody from "@/components/MineCart";
 import RivalTicker from "@/components/RivalTicker";
 import IdleLeaderboard from "@/components/IdleLeaderboard";
 import GameSummary from "@/components/GameSummary";
+import AmbientAudio from "@/components/AmbientAudio";
 
 // Set to false to lock rounds back to sequential progression for a real session.
 const DEV_MODE_FREE_NAV = true;
@@ -178,6 +179,7 @@ export default function PlayPage() {
     <>
       <CaveBackground />
       <RivalTicker sessionId={sessionId} myTeamId={teamId} />
+      <AmbientAudio />
       <main className="flex-1 flex items-start justify-center px-4 py-10 sm:py-16 relative z-10">
         <div className="frame w-full">
           <div className="bolt tl" /><div className="bolt tr" />
