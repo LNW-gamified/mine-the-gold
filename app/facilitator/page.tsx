@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { createClient as createAuthClient } from "@/lib/supabase/client";
 import { playTrack } from "@/lib/audioManager";
 import type { Session, Team } from "@/lib/types";
-import { MAX_POSSIBLE_SCORE } from "@/lib/types";
+import { MAX_POSSIBLE_SCORE, ROUND_SHORT_NAMES } from "@/lib/types";
 import CartBody from "@/components/MineCart";
 import FacilitatorInsights from "@/components/FacilitatorInsights";
 import HeroBackground from "@/components/HeroBackground";
@@ -252,6 +252,7 @@ export default function FacilitatorPage() {
                   </span>
                   <span className="lane-score">{t.score}</span>
                 </div>
+                <p className="text-xs text-text-dim mb-2">On: {ROUND_SHORT_NAMES[t.current_round] ?? "—"}</p>
                 <div className="track">
                   <div className="rail-ties" />
                   <div className="finish" />
