@@ -1,39 +1,44 @@
 import Link from "next/link";
-import CaveBackground from "@/components/CaveBackground";
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <>
-      <CaveBackground motes={false} />
-      <main className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
-      <div className="max-w-xl w-full text-center py-16">
-        <p className="text-text-dim uppercase tracking-[0.2em] text-xs mb-4">
-          Into the Mine &middot; Discovery Challenge
-        </p>
-        <h1 className="text-5xl font-bold text-nugget mb-4">Mine the Gold</h1>
-        <p className="text-text-dim text-lg mb-12 leading-relaxed">
-          Somewhere beneath the surface lies the gold: the business impact and
-          compelling reason a prospect needs to change. Dig past the surface.
-          Most reps pan for gold. Elite reps mine for it.
-        </p>
+    <main className="flex-1 relative flex flex-col">
+      <Image
+        src="/mine-hero.webp"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(180deg, rgba(11,9,6,0.75) 0%, rgba(11,9,6,0.55) 40%, rgba(11,9,6,0.85) 100%)",
+        }}
+      />
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <Link href="/join" className="ore-card-subtle p-6 text-left hover:brightness-110 transition" style={{ borderTopColor: "var(--gold)" }}>
-            <h2 className="text-xl font-bold text-text mb-1">Join as a team</h2>
-            <p className="text-text-dim text-sm">
-              Have a room code from your facilitator? Enter it and start digging.
-            </p>
-          </Link>
+      <div className="relative z-10 flex justify-end px-6 py-6">
+        <Link href="/facilitator" className="text-xs text-text-dim uppercase tracking-widest hover:text-text transition">
+          Run a session
+        </Link>
+      </div>
 
-          <Link href="/facilitator" className="ore-card-subtle p-6 text-left hover:brightness-110 transition" style={{ borderTopColor: "var(--rock)" }}>
-            <h2 className="text-xl font-bold text-text mb-1">Run a session</h2>
-            <p className="text-text-dim text-sm">
-              Facilitators: create a room, control rounds, and score teams live.
-            </p>
+      <div className="relative z-10 flex-1 flex items-center justify-center px-6 pb-16">
+        <div className="max-w-xl w-full text-center">
+          <p className="kicker text-center">Into the Mine &middot; Discovery Challenge</p>
+          <h1 className="hero-title text-5xl mb-4">Mine the Gold</h1>
+          <p className="text-text-dim text-lg mb-10 leading-relaxed">
+            Somewhere beneath the surface lies the gold: the business impact and
+            compelling reason a prospect needs to change. Dig past the surface.
+            Most reps pan for gold. Elite reps mine for it.
+          </p>
+          <Link href="/join" className="btn btn-gold inline-flex px-10 py-4 text-base">
+            Join as a team
           </Link>
         </div>
       </div>
-      </main>
-    </>
+    </main>
   );
 }

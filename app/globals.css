@@ -265,6 +265,16 @@ h1, h2, h3, .display {
   text-shadow: 0 2px 0 #3a2400, 0 0 22px rgba(232,177,61,0.35);
   letter-spacing: 0.01em;
 }
+
+/* Same Rye treatment as .plaque h1, for headings outside the score plaque
+   (e.g. the homepage hero title). */
+.hero-title {
+  font-family: var(--font-rye), 'Rye', serif;
+  font-weight: 400;
+  color: #fff2c4;
+  text-shadow: 0 2px 0 #3a2400, 0 0 22px rgba(232,177,61,0.35);
+  letter-spacing: 0.01em;
+}
 .score-plate {
   background: linear-gradient(155deg, #3a2f1e, #1c150c);
   border: 1px solid #55442a;
