@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactElement } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { playTrack } from "@/lib/audioManager";
 import type { Team } from "@/lib/types";
 import { ROUND_NAMES, ROUND_SHORT_NAMES } from "@/lib/types";
 import Round1Sort from "@/components/rounds/Round1Sort";
@@ -147,6 +148,15 @@ export default function PlayPage() {
   useEffect(() => {
     if (!sessionId || !teamId) router.push("/join");
   }, [sessionId, teamId, router]);
+
+  // Asserted here (not just left to the join page's post-submit call) so
+  // this page is never at the mercy of leftover team-song from wherever the
+  // browser tab was before - a refresh, a resumed session, or a facilitator
+  // who never went through /join in this tab all land here with the right
+  // ambience instead of inheriting whatever was last playing.
+  useEffect(() => {
+    playTrack("/sounds/ambient-cave.mp3", { loop: true, volume: 0.25 });
+  }, []);
 
   useEffect(() => {
     supabase.from("app_settings").select("dev_mode").eq("id", true).single().then(({ data }) => {

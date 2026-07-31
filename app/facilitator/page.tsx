@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { createClient as createAuthClient } from "@/lib/supabase/client";
+import { playTrack } from "@/lib/audioManager";
 import type { Session, Team } from "@/lib/types";
 import { MAX_POSSIBLE_SCORE } from "@/lib/types";
 import CartBody from "@/components/MineCart";
@@ -51,6 +52,14 @@ export default function FacilitatorPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [devMode, setDevMode] = useState(false);
+
+  // Asserted here so this page is never at the mercy of leftover team-song
+  // from browsing the homepage/join flow earlier in the same tab - the
+  // facilitator screen always gets the mine ambience, never the join
+  // screen's team-hype track.
+  useEffect(() => {
+    playTrack("/sounds/ambient-cave.mp3", { loop: true, volume: 0.25 });
+  }, []);
 
   useEffect(() => {
     supabase.from("app_settings").select("dev_mode").eq("id", true).single().then(({ data }) => {
