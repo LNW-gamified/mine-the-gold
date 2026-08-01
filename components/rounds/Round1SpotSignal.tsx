@@ -6,67 +6,6 @@ import type { SignalStatement } from "@/lib/types";
 import { SIGNAL_TYPE_LABELS } from "@/lib/types";
 
 const FULL_POINTS = 2;
-const PARTIAL_POINTS = 1;
-
-interface Chunk {
-  key: string;
-  text: string;
-  clickable: boolean;
-  isClue: boolean;
-}
-
-// Tokenizes the full statement into ordered pieces with their character
-// offsets: clause-break punctuation (,;:—–. at a true clause end, not
-// mid-word like "SAM.gov") becomes its own non-clickable piece, everything
-// else is split down to individual words. Offsets are found by searching
-// forward from a moving cursor rather than computed from split lengths, so
-// a repeated word still resolves to its correct occurrence in reading
-// order.
-function tokenizeStatement(text: string): { text: string; clickable: boolean; start: number; end: number }[] {
-  const pieces = text.split(/([,;:—–]|\.(?=\s|$))/);
-  const raw: { text: string; clickable: boolean }[] = [];
-  for (const piece of pieces) {
-    const trimmed = piece.trim();
-    if (!trimmed) continue;
-    if (/^[,;:—–.]$/.test(trimmed)) {
-      raw.push({ text: trimmed, clickable: false });
-      continue;
-    }
-    for (const word of trimmed.split(/\s+/)) {
-      raw.push({ text: word, clickable: true });
-    }
-  }
-  let cursor = 0;
-  return raw.map((t) => {
-    const start = text.indexOf(t.text, cursor);
-    cursor = start + t.text.length;
-    return { ...t, start, end: start + t.text.length };
-  });
-}
-
-// Every word is its own tap target, including inside a multi-word clue
-// phrase (e.g. "keyword searches" is two separate chunks, not one) - a
-// pre-combined clue chunk would render visibly wider than the single-word
-// distractors around it and give the answer away by box size alone before
-// anyone reads the text. Whether a word counts toward a clue is decided by
-// character-offset overlap with that clue phrase's span in the original
-// text, not by bundling words into one chunk.
-function chunkStatement(text: string, cluePhrases: string[]): Chunk[] {
-  const tokens = tokenizeStatement(text);
-  const clueSpans = cluePhrases
-    .map((phrase) => {
-      const start = text.indexOf(phrase);
-      return start === -1 ? null : { start, end: start + phrase.length };
-    })
-    .filter((s): s is { start: number; end: number } => s !== null);
-
-  return tokens.map((t, i) => ({
-    key: `w${i}`,
-    text: t.text,
-    clickable: t.clickable,
-    isClue: t.clickable && clueSpans.some((s) => t.start < s.end && t.end > s.start),
-  }));
-}
 
 // Char-sum hash of teamId (+ a type tag) so each team's assigned content
 // stays pinned across reloads instead of re-randomizing on every render.
@@ -90,7 +29,18 @@ function seededShuffle<T>(arr: T[], seed: string): T[] {
   return result;
 }
 
-type Verdict = "full" | "partial" | "miss";
+// Plain (non-seeded) shuffle for answer-option order - unlike the
+// statement order above, this should genuinely randomize every
+// playthrough, not stay pinned per team, so position alone never becomes
+// a learnable tell.
+function shuffle<T>(arr: T[]): T[] {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 
 export default function Round1SpotSignal({
   sessionId,
@@ -103,9 +53,8 @@ export default function Round1SpotSignal({
 }) {
   const [statements, setStatements] = useState<SignalStatement[]>([]);
   const [index, setIndex] = useState(0);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [phase, setPhase] = useState<"answering" | "revealed" | "summary">("answering");
-  const [verdict, setVerdict] = useState<Verdict>("miss");
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [pointsByStatement, setPointsByStatement] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -127,48 +76,25 @@ export default function Round1SpotSignal({
   }, [teamId]);
 
   const current = statements[index];
-  const chunks = useMemo(() => (current ? chunkStatement(current.text, current.clue_phrases) : []), [current]);
+  const options = useMemo(
+    () => (current ? shuffle([current.correct_answer, ...current.distractor_options]) : []),
+    [current]
+  );
 
   if (statements.length === 0) return <p className="text-text-dim">Loading the next statement...</p>;
 
-  function toggle(key: string) {
+  function choose(option: string) {
     if (phase !== "answering") return;
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  }
-
-  function check() {
-    const clueKeys = new Set(chunks.filter((c) => c.isClue).map((c) => c.key));
-    const allCorrectFound = [...clueKeys].every((k) => selected.has(k));
-    const noWrongPicks = [...selected].every((k) => clueKeys.has(k));
-    const anyCorrectSelected = [...selected].some((k) => clueKeys.has(k));
-
-    let v: Verdict;
-    let points: number;
-    if (allCorrectFound && noWrongPicks) {
-      v = "full";
-      points = FULL_POINTS;
-    } else if (allCorrectFound || anyCorrectSelected) {
-      v = "partial";
-      points = PARTIAL_POINTS;
-    } else {
-      v = "miss";
-      points = 0;
-    }
-
-    setPointsByStatement((prev) => ({ ...prev, [current.id]: points }));
-    setVerdict(v);
+    const correct = option === current.correct_answer;
+    setSelectedOption(option);
+    setPointsByStatement((prev) => ({ ...prev, [current.id]: correct ? FULL_POINTS : 0 }));
     setPhase("revealed");
   }
 
   function next() {
     if (index < statements.length - 1) {
       setIndex((i) => i + 1);
-      setSelected(new Set());
+      setSelectedOption(null);
       setPhase("answering");
     } else {
       finish();
@@ -230,55 +156,34 @@ export default function Round1SpotSignal({
     );
   }
 
+  const correct = selectedOption === current.correct_answer;
+
   return (
     <div>
       <p className="text-text-dim text-sm mb-2">
         Statement {index + 1} of {statements.length}
       </p>
       <p className="text-text-dim text-sm mb-6">
-        A prospect just said something. Tap the word or phrase that&rsquo;s the real clue &mdash; the part worth
-        digging into.
+        A prospect just said something. Which part is the real clue &mdash; the part worth digging into?
       </p>
 
       <div className="statement-card mb-6">
         <p className="text-xs uppercase tracking-widest text-text-dim mb-2">The prospect says:</p>
-        <p className="text-lg leading-relaxed">
-          {chunks.map((c, i) => {
-            // No leading space on the first chunk or before a punctuation
-            // chunk (it attaches directly to the word before it); every
-            // other chunk gets one, so words read with normal spacing.
-            const display = i === 0 || !c.clickable ? c.text : ` ${c.text}`;
-            if (!c.clickable) {
-              return (
-                <span key={c.key} className="clue-chip plain">
-                  {display}
-                </span>
-              );
-            }
-            const isRevealed = phase === "revealed";
-            const isSelected = selected.has(c.key);
-            const cls = [
-              "clue-chip",
-              !isRevealed && isSelected ? "selected" : "",
-              isRevealed && c.isClue ? "correct-reveal" : "",
-              isRevealed && !c.isClue && isSelected ? "wrong-reveal" : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-            return (
-              <button key={c.key} type="button" className={cls} disabled={isRevealed} onClick={() => toggle(c.key)}>
-                {display}
-              </button>
-            );
-          })}
-        </p>
+        <p className="text-lg leading-relaxed">{current.text}</p>
       </div>
 
       {phase === "answering" && (
-        <div className="text-center">
-          <button className="btn btn-gold" disabled={selected.size === 0} onClick={check}>
-            Check my read
-          </button>
+        <div className="space-y-3">
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              className="ore-card w-full text-left p-4 text-sm"
+              onClick={() => choose(option)}
+            >
+              {option}
+            </button>
+          ))}
         </div>
       )}
 
@@ -286,14 +191,16 @@ export default function Round1SpotSignal({
         <div>
           <p
             className="text-center font-bold mb-4"
-            style={{
-              color: verdict === "full" ? "var(--gold)" : verdict === "partial" ? "var(--nugget)" : "var(--wildcard)",
-            }}
+            style={{ color: correct ? "var(--gold)" : "var(--wildcard)" }}
           >
-            {verdict === "full" && "Found it — that's the clue."}
-            {verdict === "partial" && "Partly there — see what you missed above."}
-            {verdict === "miss" && "Not quite — here's the real clue."}
+            {correct ? "Found it — that's the clue." : "Not quite — here's the real clue."}
           </p>
+          {!correct && (
+            <div className="ore-card-row p-4 mb-3">
+              <p className="text-xs uppercase tracking-widest text-text-dim mb-1">The real clue</p>
+              <p className="text-sm">{current.correct_answer}</p>
+            </div>
+          )}
           <div className="ore-card-row p-4 mb-3">
             <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Signal type</p>
             <p className="text-sm text-gold font-bold">{SIGNAL_TYPE_LABELS[current.signal_type]}</p>
