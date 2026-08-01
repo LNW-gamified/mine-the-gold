@@ -23,7 +23,7 @@ export default function JoinPage() {
     const name = teamName.trim();
 
     if (!code || !name) {
-      setError("Enter both a room code and a team name.");
+      setError("Enter both a mine code and a team name.");
       setLoading(false);
       return;
     }
@@ -35,7 +35,7 @@ export default function JoinPage() {
       .maybeSingle();
 
     if (sessionErr || !session) {
-      setError("No session found for that room code. Double-check with your facilitator.");
+      setError("No session found for that mine code. Double-check with your facilitator.");
       setLoading(false);
       return;
     }
@@ -88,9 +88,9 @@ export default function JoinPage() {
           <div className="bolt bl" /><div className="bolt br" />
 
           <h1 className="hero-title text-[34px] mb-1">Join the dig</h1>
-          <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s room code and pick a team name.</p>
+          <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s mine code and pick a team name.</p>
 
-          <label className="block text-sm mb-1 text-text-dim">Room code</label>
+          <label className="block text-sm mb-1 text-text-dim">Mine code</label>
           <input
             className="w-full mb-4"
             value={roomCode}

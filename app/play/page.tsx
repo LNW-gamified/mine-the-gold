@@ -295,8 +295,8 @@ export default function PlayPage() {
                   <div className="text-center py-12">
                     <h2 className="text-2xl font-bold mb-3">Ready to dig, {team.name}?</h2>
                     <p className="text-text-dim mb-8">
-                      Four rounds. Every one asks the same question: is this dirt, rock, gold, or a gold nugget?
-                      Play at your own pace, no need to wait on anyone else.
+                      Work your way through the levels of the mine. Along the way, ask yourself,
+                      is this dirt, rock, or gold?
                     </p>
                     <button className="btn btn-gold" onClick={advanceRound}>Start Round 1</button>
 
