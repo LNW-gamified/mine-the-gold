@@ -54,8 +54,6 @@ export interface SignalStatement {
   id: string;
   text: string;
   signal_type: SignalType;
-  correct_answer: string;
-  distractor_options: string[];
   ask_question: string;
   explanation: string | null;
 }

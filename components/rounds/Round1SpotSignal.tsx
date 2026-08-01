@@ -1,11 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import type { SignalStatement } from "@/lib/types";
+import type { SignalStatement, SignalType } from "@/lib/types";
 import { SIGNAL_TYPE_LABELS } from "@/lib/types";
 
 const FULL_POINTS = 2;
+
+// Fixed order, not shuffled - the same 7 type options every statement, so
+// the player is learning to recognize the 7 signal types themselves, not
+// re-parsing a different option set each time.
+const ALL_SIGNAL_TYPES: SignalType[] = [
+  "frustration", "timing", "habit", "trial_error", "goals", "uncertainty", "gaps",
+];
 
 // Char-sum hash of teamId (+ a type tag) so each team's assigned content
 // stays pinned across reloads instead of re-randomizing on every render.
@@ -29,19 +36,6 @@ function seededShuffle<T>(arr: T[], seed: string): T[] {
   return result;
 }
 
-// Plain (non-seeded) shuffle for answer-option order - unlike the
-// statement order above, this should genuinely randomize every
-// playthrough, not stay pinned per team, so position alone never becomes
-// a learnable tell.
-function shuffle<T>(arr: T[]): T[] {
-  const result = [...arr];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
-
 export default function Round1SpotSignal({
   sessionId,
   teamId,
@@ -54,7 +48,7 @@ export default function Round1SpotSignal({
   const [statements, setStatements] = useState<SignalStatement[]>([]);
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<"answering" | "revealed" | "summary">("answering");
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<SignalType | null>(null);
   const [pointsByStatement, setPointsByStatement] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -76,17 +70,13 @@ export default function Round1SpotSignal({
   }, [teamId]);
 
   const current = statements[index];
-  const options = useMemo(
-    () => (current ? shuffle([current.correct_answer, ...current.distractor_options]) : []),
-    [current]
-  );
 
   if (statements.length === 0) return <p className="text-text-dim">Loading the next statement...</p>;
 
-  function choose(option: string) {
+  function choose(type: SignalType) {
     if (phase !== "answering") return;
-    const correct = option === current.correct_answer;
-    setSelectedOption(option);
+    const correct = type === current.signal_type;
+    setSelectedType(type);
     setPointsByStatement((prev) => ({ ...prev, [current.id]: correct ? FULL_POINTS : 0 }));
     setPhase("revealed");
   }
@@ -94,7 +84,7 @@ export default function Round1SpotSignal({
   function next() {
     if (index < statements.length - 1) {
       setIndex((i) => i + 1);
-      setSelectedOption(null);
+      setSelectedType(null);
       setPhase("answering");
     } else {
       finish();
@@ -156,7 +146,7 @@ export default function Round1SpotSignal({
     );
   }
 
-  const correct = selectedOption === current.correct_answer;
+  const correct = selectedType === current.signal_type;
 
   return (
     <div>
@@ -164,7 +154,7 @@ export default function Round1SpotSignal({
         Statement {index + 1} of {statements.length}
       </p>
       <p className="text-text-dim text-sm mb-6">
-        A prospect just said something. Which part is the real clue &mdash; the part worth digging into?
+        A prospect just said something. Which signal is it?
       </p>
 
       <div className="statement-card mb-6">
@@ -173,15 +163,15 @@ export default function Round1SpotSignal({
       </div>
 
       {phase === "answering" && (
-        <div className="space-y-3">
-          {options.map((option) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {ALL_SIGNAL_TYPES.map((type) => (
             <button
-              key={option}
+              key={type}
               type="button"
-              className="ore-card w-full text-left p-4 text-sm"
-              onClick={() => choose(option)}
+              className="ore-card p-4 text-sm"
+              onClick={() => choose(type)}
             >
-              {option}
+              {SIGNAL_TYPE_LABELS[type]}
             </button>
           ))}
         </div>
@@ -193,14 +183,8 @@ export default function Round1SpotSignal({
             className="text-center font-bold mb-4"
             style={{ color: correct ? "var(--gold)" : "var(--wildcard)" }}
           >
-            {correct ? "Found it — that's the clue." : "Not quite — here's the real clue."}
+            {correct ? "Found it — that's the signal." : "Not quite — here's the real signal."}
           </p>
-          {!correct && (
-            <div className="ore-card-row p-4 mb-3">
-              <p className="text-xs uppercase tracking-widest text-text-dim mb-1">The real clue</p>
-              <p className="text-sm">{current.correct_answer}</p>
-            </div>
-          )}
           <div className="ore-card-row p-4 mb-3">
             <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Signal type</p>
             <p className="text-sm text-gold font-bold">{SIGNAL_TYPE_LABELS[current.signal_type]}</p>
