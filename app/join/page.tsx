@@ -87,7 +87,7 @@ export default function JoinPage() {
           <div className="bolt tl" /><div className="bolt tr" />
           <div className="bolt bl" /><div className="bolt br" />
 
-          <h1 className="hero-title text-3xl mb-1">Join the dig</h1>
+          <h1 className="hero-title text-[34px] mb-1">Join the dig</h1>
           <p className="text-text-dim text-sm mb-6">Enter your facilitator&apos;s room code and pick a team name.</p>
 
           <label className="block text-sm mb-1 text-text-dim">Room code</label>

@@ -5,7 +5,14 @@ import { supabase } from "@/lib/supabase";
 import type { Card } from "@/lib/types";
 import TierSortBoard, { type SortResult } from "@/components/TierSortBoard";
 
-const CODES = ["fg_01", "fg_02", "fg_03", "fg_04", "gold_01", "gold_02", "gold_03", "gold_04"];
+// Gold means the same thing here as it does in Round 1: a quantified dollar
+// figure (the gold_nugget category), not just a real-but-uncosted
+// consequence. gold_04/gold_05 are the plain "gold" category's strongest
+// "sounds important but no number" traps - folded in as harder,
+// more-convincing near-misses alongside the two easiest generic fg_XX cards
+// they replaced, so Fool's Gold mixes obvious fluff with statements that
+// actually take a beat to disqualify.
+const CODES = ["fg_01", "fg_02", "gold_04", "gold_05", "nugget_01", "nugget_02", "nugget_04", "nugget_06"];
 
 const BINS = [
   { key: "gold", label: "Gold", colorVar: "gold" },
@@ -61,7 +68,7 @@ export default function Round4FoolsGold({
 
   return (
     <TierSortBoard
-      items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: c.category === "gold" ? "gold" : "foolsgold", points: 2, explanation: c.explanation ?? undefined }))}
+      items={cards.map((c) => ({ id: c.id, label: c.text, correctBin: c.category === "gold_nugget" ? "gold" : "foolsgold", points: 2, explanation: c.explanation ?? undefined }))}
       bins={BINS}
       instructions="Not everything that sounds valuable is gold. If a rep can't answer &ldquo;why does that matter?&rdquo; about a statement, it's fool's gold. Sort each one."
       onSubmit={handleSubmit}
