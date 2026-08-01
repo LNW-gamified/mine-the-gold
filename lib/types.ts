@@ -69,6 +69,26 @@ export const SIGNAL_TYPE_LABELS: Record<SignalType, string> = {
   gaps: 'Gaps',
 };
 
+export type TunnelStage = 'dirt' | 'rock' | 'nugget';
+
+export interface TunnelDecision {
+  id: string;
+  scenario_id: string;
+  stage: TunnelStage;
+  correct_response: string;
+  wrong_response: string;
+}
+
+export interface GoldChecklistItem {
+  id: string;
+  text: string;
+  has_number: boolean;
+  has_consequence: boolean;
+  has_right_person: boolean;
+  is_gold: boolean;
+  next_question: string | null;
+}
+
 export interface Submission {
   id: string;
   session_id: string;
@@ -84,17 +104,20 @@ export interface Submission {
   explanation: string | null;
 }
 
-// Round 1 Stage A's max: 7 statements (one per signal type) x 2 points for a
-// fully-correct read = 14. Rounds 2 and 3 are placeholders with no scoring
-// yet (Phase 3), so this undercounts the eventual real max - revisit once
-// their content and points land.
-export const MAX_POSSIBLE_SCORE = 14;
+// Round 1: 7 statements x 2 points = 14.
+// Round 2: placement (dirt 3 + rock 3 + nugget 4 = 10) + perfect-tunnel
+// bonus (2) + the 3 pitch-or-dig decisions (dirt 2 + rock 3 + gold 4 = 9)
+// = 21.
+// Round 3: Stage A's 6 checklist items x 3 points (one per sign) = 18,
+// plus Stage B's 8 timed cards x 2 points = 16, for 34.
+// Total: 14 + 21 + 34 = 69.
+export const MAX_POSSIBLE_SCORE = 69;
 
 export const ROUND_NAMES: Record<number, string> = {
   0: 'Ready to dig',
   1: 'Round 1: Spot the Signal',
   2: 'Round 2: Dig to Gold',
-  3: 'Round 3: Know Your Gold',
+  3: 'Round 3: Collect the Gold',
   4: 'Game complete',
 };
 

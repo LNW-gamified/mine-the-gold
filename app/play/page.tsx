@@ -198,12 +198,12 @@ export default function PlayPage() {
                 )}
                 {displayRound === 2 && (
                   displayRound === round
-                    ? <Round2DigToGold onDone={advanceRound} />
+                    ? <Round2DigToGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />
                     : <RoundRecap teamId={teamId} round={2} />
                 )}
                 {displayRound === 3 && (
                   displayRound === round
-                    ? <Round3KnowYourGold onDone={advanceRound} />
+                    ? <Round3KnowYourGold sessionId={sessionId} teamId={teamId} onDone={advanceRound} />
                     : <RoundRecap teamId={teamId} round={3} />
                 )}
                 {displayRound >= 4 && (
