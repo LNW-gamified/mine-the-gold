@@ -58,7 +58,7 @@ export default function GameSummary({ teamId, finalScore }: { teamId: string; fi
     })();
   }, [teamId]);
 
-  const rounds = [1, 2, 3, 4];
+  const rounds = [1, 2, 3];
   const correctCount = rows.filter((r) => r.correct).length;
   const totalCount = rows.length;
 

@@ -48,6 +48,27 @@ export interface DigDeeperPrompt {
   explanation: string | null;
 }
 
+export type SignalType = 'frustration' | 'timing' | 'habit' | 'trial_error' | 'goals' | 'uncertainty' | 'gaps';
+
+export interface SignalStatement {
+  id: string;
+  text: string;
+  signal_type: SignalType;
+  clue_phrases: string[];
+  ask_question: string;
+  explanation: string | null;
+}
+
+export const SIGNAL_TYPE_LABELS: Record<SignalType, string> = {
+  frustration: 'Frustration',
+  timing: 'Timing',
+  habit: 'Habit',
+  trial_error: 'Trial & Error',
+  goals: 'Goals',
+  uncertainty: 'Uncertainty',
+  gaps: 'Gaps',
+};
+
 export interface Submission {
   id: string;
   session_id: string;
@@ -63,26 +84,26 @@ export interface Submission {
   explanation: string | null;
 }
 
-// Sum of every round's maximum possible points: 39 (Round 1) + 17 (Round 2)
-// + 12 (Round 3, including the perfect-tunnel bonus) + 16 (Round 4) = 84.
-export const MAX_POSSIBLE_SCORE = 84;
+// Round 1 Stage A's max: 7 statements (one per signal type) x 2 points for a
+// fully-correct read = 14. Rounds 2 and 3 are placeholders with no scoring
+// yet (Phase 3), so this undercounts the eventual real max - revisit once
+// their content and points land.
+export const MAX_POSSIBLE_SCORE = 14;
 
 export const ROUND_NAMES: Record<number, string> = {
   0: 'Ready to dig',
-  1: 'Round 1: Sort the Mine',
-  2: 'Round 2: Dig Deeper',
-  3: 'Round 3: Build the Tunnel',
-  4: "Round 4: Fool's Gold",
-  5: 'Game complete',
+  1: 'Round 1: Spot the Signal',
+  2: 'Round 2: Dig to Gold',
+  3: 'Round 3: Know Your Gold',
+  4: 'Game complete',
 };
 
 export const ROUND_SHORT_NAMES: Record<number, string> = {
   0: 'Start',
-  1: 'Sort',
+  1: 'Signal',
   2: 'Dig',
-  3: 'Tunnel',
-  4: "Fool's Gold",
-  5: 'Done',
+  3: 'Gold',
+  4: 'Done',
 };
 
 export const CATEGORY_LABELS: Record<Category, string> = {

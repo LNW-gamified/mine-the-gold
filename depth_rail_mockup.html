@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Depth rail — mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Oswald:wght@400;500;600;700&family=Roboto+Slab:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #100d09;
+    --surface-raised: #271e13;
+    --border: #4a3f2c;
+    --text: #ece2cc;
+    --text-dim: #a89a7d;
+    --gold: #d6ab3d;
+    --nugget: #f4c542;
+    --dirt: #8a6338;
+    --rock: #8a8a86;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Oswald', ui-sans-serif, sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+  h1.page-title {
+    text-align: center;
+    font-family: 'Roboto Slab', Georgia, serif;
+    font-size: 20px;
+    margin: 0 0 4px;
+  }
+  p.page-sub {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+    margin: 0 0 22px;
+  }
+  .picker {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 26px;
+    flex-wrap: wrap;
+  }
+  .picker button {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .picker button.active { color: #100d09; background: var(--gold); border-color: var(--gold); }
+
+  .stage {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  /* --- The rail --- */
+  .rail-col {
+    width: 64px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .rail-track {
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    bottom: 10px;
+    width: 6px;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    background: linear-gradient(180deg, #3a2f1e 0%, #241a10 60%, #14100a 100%);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .rail-track::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 22%;
+    background: linear-gradient(180deg, rgba(214,171,61,0) 0%, rgba(214,171,61,0.35) 100%);
+  }
+  .rail-tick {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--surface-raised);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Roboto Slab', Georgia, serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    z-index: 2;
+    transition: border-color 0.4s ease, color 0.4s ease, background 0.4s ease;
+  }
+  .rail-tick.reached { border-color: var(--gold); color: var(--gold); background: #1c160e; }
+  .rail-tick.current { border-color: var(--nugget); color: #100d09; background: var(--nugget); box-shadow: 0 0 0 4px rgba(244,197,66,0.25); }
+
+  .rail-marker {
+    position: absolute;
+    left: 50%;
+    width: 34px; height: 22px;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    transition: top 0.7s cubic-bezier(.3,1,.4,1);
+  }
+  .rail-marker svg { width: 100%; height: 100%; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+
+  .rail-gold {
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+    font-size: 16px;
+  }
+
+  /* --- Content panel --- */
+  .content-col { flex: 1; min-width: 0; }
+  .frame {
+    position: relative;
+    background:
+      repeating-linear-gradient(180deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 26px),
+      linear-gradient(180deg, #15100a 0%, #0d0a06 100%);
+    border: 3px solid #4a3a24;
+    border-radius: 6px;
+    box-shadow: 0 0 0 8px #2a2016, 0 0 0 9px #000, 0 16px 40px rgba(0,0,0,0.55), inset 0 2px 0 rgba(255,255,255,0.06);
+    padding: 26px 22px;
+    min-height: 360px;
+  }
+  .bolt { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #cfc7ad, #6b5f45 60%, #382e1c); box-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+  .bolt.tl { top: 9px; left: 9px; } .bolt.tr { top: 9px; right: 9px; }
+  .bolt.bl { bottom: 9px; left: 9px; } .bolt.br { bottom: 9px; right: 9px; }
+
+  .round-kicker { color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .round-title { font-family: 'Roboto Slab', Georgia, serif; font-size: 24px; margin: 0 0 10px; transition: color 0.4s ease; }
+  .round-desc { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+  .round-visual {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    font-size: 14px;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .depth-label {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Depth Rail</h1>
+<p class="page-sub">A persistent marker running the length of the play session &mdash; click each round to see it move</p>
+
+<div class="picker">
+  <button data-round="1" class="active">Round 1: Spot the Signal</button>
+  <button data-round="2">Round 2: Dig to Gold</button>
+  <button data-round="3">Round 3: Know Your Gold</button>
+  <button data-round="4">Game Complete</button>
+</div>
+
+<div class="stage">
+  <div class="rail-col">
+    <div class="rail-track"></div>
+    <div class="rail-tick" id="tick1" style="top: 14%;">1</div>
+    <div class="rail-tick" id="tick2" style="top: 48%;">2</div>
+    <div class="rail-tick" id="tick3" style="top: 82%;">3</div>
+    <div class="rail-gold">💰</div>
+    <div class="rail-marker" id="marker" style="top: 14%;">
+      <svg viewBox="0 0 46 30" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="6" width="34" height="16" rx="2" fill="#3a2a14" stroke="#5a4022" stroke-width="1.5"/>
+        <path d="M6,6 L10,0 L34,0 L38,6 Z" fill="#4a3418"/>
+        <circle cx="12" cy="24" r="5" fill="#0e0a05" stroke="#2a2015" stroke-width="1.5"/>
+        <circle cx="32" cy="24" r="5" fill="#0e0a05" stroke="#2a2015" stroke-width="1.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="content-col">
+    <div class="frame">
+      <div class="bolt tl"></div><div class="bolt tr"></div>
+      <div class="bolt bl"></div><div class="bolt br"></div>
+      <p class="round-kicker" id="kicker">Round 1 of 3</p>
+      <h2 class="round-title" id="title">Spot the Signal</h2>
+      <p class="round-desc" id="desc">Tap the words in the prospect's sentence that are the real clue. Then pick the question that goes one level deeper.</p>
+      <div class="round-visual" id="visual">Tap-the-phrase interaction goes here</div>
+    </div>
+    <p class="depth-label" id="depthLabel">Near the surface</p>
+  </div>
+</div>
+
+<script>
+const ROUNDS = {
+  1: {
+    top: "14%", tick: "tick1", kicker: "Round 1 of 3", title: "Spot the Signal",
+    desc: "Tap the words in the prospect's sentence that are the real clue. Then pick the question that goes one level deeper.",
+    visual: "Tap-the-phrase interaction", depth: "Near the surface", color: "var(--dirt)"
+  },
+  2: {
+    top: "48%", tick: "tick2", kicker: "Round 2 of 3", title: "Dig to Gold",
+    desc: "Follow one customer story down. At each depth, decide: pitch now, or dig deeper?",
+    visual: "Sequence + pitch-or-dig decision", depth: "Into the rock", color: "var(--rock)"
+  },
+  3: {
+    top: "82%", tick: "tick3", kicker: "Round 3 of 3", title: "Know Your Gold",
+    desc: "Check the three signs, then prove you can spot real Gold under pressure &mdash; the clock is running.",
+    visual: "Checklist, then timed classification", depth: "Near the gold seam", color: "var(--gold)"
+  },
+  4: {
+    top: "96%", tick: "tick3", kicker: "Session complete", title: "You Found the Gold",
+    desc: "Full haul, reasoning behind every call.",
+    visual: "Celebration cart + score", depth: "Bottom of the mine", color: "var(--nugget)"
+  }
+};
+
+const buttons = document.querySelectorAll('.picker button');
+const marker = document.getElementById('marker');
+const title = document.getElementById('title');
+const kicker = document.getElementById('kicker');
+const desc = document.getElementById('desc');
+const visual = document.getElementById('visual');
+const depthLabel = document.getElementById('depthLabel');
+
+function setRound(n) {
+  const r = ROUNDS[n];
+  marker.style.top = r.top;
+  title.textContent = r.title;
+  title.style.color = r.color;
+  kicker.textContent = r.kicker;
+  desc.innerHTML = r.desc;
+  visual.textContent = r.visual;
+  depthLabel.textContent = r.depth;
+
+  [1,2,3].forEach(i => {
+    const el = document.getElementById('tick' + i);
+    el.classList.remove('reached', 'current');
+    if (i < n || (n === 4)) el.classList.add('reached');
+    if (i === n) el.classList.add('current');
+  });
+
+  buttons.forEach(b => b.classList.toggle('active', b.dataset.round == n));
+}
+
+buttons.forEach(b => b.addEventListener('click', () => setRound(b.dataset.round)));
+setRound(1);
+</script>
+
+</body>
+</html>
