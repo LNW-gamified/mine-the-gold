@@ -15,49 +15,57 @@ interface Chunk {
   isClue: boolean;
 }
 
-// Splits a non-clue segment into individual word-level tap targets, not
-// whole clauses: clue_phrases are now short (1-3 word) fragments rather
-// than full clauses, so a distractor chunk spanning an entire clause would
-// dwarf the clue chunks it's competing with and give away the answer by
-// size alone. Clause-break punctuation is still peeled off into its own
-// non-clickable chunk (spot_the_clue_mockup.html's plain "." / "," chips)
-// rather than glued onto the word before it.
-function tokenizePlain(segment: string, keyPrefix: string): Chunk[] {
-  const pieces = segment.split(/([,;:—–]|\.(?=\s|$))/);
-  const chunks: Chunk[] = [];
-  let i = 0;
+// Tokenizes the full statement into ordered pieces with their character
+// offsets: clause-break punctuation (,;:—–. at a true clause end, not
+// mid-word like "SAM.gov") becomes its own non-clickable piece, everything
+// else is split down to individual words. Offsets are found by searching
+// forward from a moving cursor rather than computed from split lengths, so
+// a repeated word still resolves to its correct occurrence in reading
+// order.
+function tokenizeStatement(text: string): { text: string; clickable: boolean; start: number; end: number }[] {
+  const pieces = text.split(/([,;:—–]|\.(?=\s|$))/);
+  const raw: { text: string; clickable: boolean }[] = [];
   for (const piece of pieces) {
     const trimmed = piece.trim();
     if (!trimmed) continue;
     if (/^[,;:—–.]$/.test(trimmed)) {
-      chunks.push({ key: `${keyPrefix}-${i++}`, text: trimmed, clickable: false, isClue: false });
+      raw.push({ text: trimmed, clickable: false });
       continue;
     }
     for (const word of trimmed.split(/\s+/)) {
-      chunks.push({ key: `${keyPrefix}-${i++}`, text: word, clickable: true, isClue: false });
+      raw.push({ text: word, clickable: true });
     }
   }
-  return chunks;
+  let cursor = 0;
+  return raw.map((t) => {
+    const start = text.indexOf(t.text, cursor);
+    cursor = start + t.text.length;
+    return { ...t, start, end: start + t.text.length };
+  });
 }
 
-// Locates each clue phrase as an exact substring of the statement and walks
-// the text left to right, turning the surrounding prose into tap-able
-// distractor chunks and each clue phrase into its own single chunk.
+// Every word is its own tap target, including inside a multi-word clue
+// phrase (e.g. "keyword searches" is two separate chunks, not one) - a
+// pre-combined clue chunk would render visibly wider than the single-word
+// distractors around it and give the answer away by box size alone before
+// anyone reads the text. Whether a word counts toward a clue is decided by
+// character-offset overlap with that clue phrase's span in the original
+// text, not by bundling words into one chunk.
 function chunkStatement(text: string, cluePhrases: string[]): Chunk[] {
-  const occurrences = cluePhrases
-    .map((phrase) => ({ phrase, start: text.indexOf(phrase) }))
-    .filter((o) => o.start !== -1)
-    .sort((a, b) => a.start - b.start);
+  const tokens = tokenizeStatement(text);
+  const clueSpans = cluePhrases
+    .map((phrase) => {
+      const start = text.indexOf(phrase);
+      return start === -1 ? null : { start, end: start + phrase.length };
+    })
+    .filter((s): s is { start: number; end: number } => s !== null);
 
-  const chunks: Chunk[] = [];
-  let cursor = 0;
-  occurrences.forEach((occ, i) => {
-    chunks.push(...tokenizePlain(text.slice(cursor, occ.start), `pre${i}`));
-    chunks.push({ key: `clue${i}`, text: occ.phrase, clickable: true, isClue: true });
-    cursor = occ.start + occ.phrase.length;
-  });
-  chunks.push(...tokenizePlain(text.slice(cursor), "post"));
-  return chunks;
+  return tokens.map((t, i) => ({
+    key: `w${i}`,
+    text: t.text,
+    clickable: t.clickable,
+    isClue: t.clickable && clueSpans.some((s) => t.start < s.end && t.end > s.start),
+  }));
 }
 
 // Char-sum hash of teamId (+ a type tag) so each team's assigned content
