@@ -15,18 +15,28 @@ interface Chunk {
   isClue: boolean;
 }
 
-// Splits a non-clue segment on clause-break punctuation, keeping the
-// punctuation itself as a separate non-clickable chunk (spot_the_clue_
-// mockup.html's plain "." / "," chips) so only actual words are tap targets.
+// Splits a non-clue segment into individual word-level tap targets, not
+// whole clauses: clue_phrases are now short (1-3 word) fragments rather
+// than full clauses, so a distractor chunk spanning an entire clause would
+// dwarf the clue chunks it's competing with and give away the answer by
+// size alone. Clause-break punctuation is still peeled off into its own
+// non-clickable chunk (spot_the_clue_mockup.html's plain "." / "," chips)
+// rather than glued onto the word before it.
 function tokenizePlain(segment: string, keyPrefix: string): Chunk[] {
   const pieces = segment.split(/([,;:—–]|\.(?=\s|$))/);
   const chunks: Chunk[] = [];
-  pieces.forEach((piece, i) => {
+  let i = 0;
+  for (const piece of pieces) {
     const trimmed = piece.trim();
-    if (!trimmed) return;
-    const isPunct = /^[,;:—–.]$/.test(trimmed);
-    chunks.push({ key: `${keyPrefix}-${i}`, text: trimmed, clickable: !isPunct, isClue: false });
-  });
+    if (!trimmed) continue;
+    if (/^[,;:—–.]$/.test(trimmed)) {
+      chunks.push({ key: `${keyPrefix}-${i++}`, text: trimmed, clickable: false, isClue: false });
+      continue;
+    }
+    for (const word of trimmed.split(/\s+/)) {
+      chunks.push({ key: `${keyPrefix}-${i++}`, text: word, clickable: true, isClue: false });
+    }
+  }
   return chunks;
 }
 

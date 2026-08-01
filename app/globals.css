@@ -451,19 +451,31 @@ h1, h2, h3, .display {
   }
 }
 
-/* Round 3 Stage B's "Fool's Gold" choice - same weight/shape as .btn-gold so
-   neither option reads as the "default" pick, just tinted with the existing
-   --foolsgold token instead of gold. */
-.btn-foolsgold {
-  background: linear-gradient(180deg, #cfc48a 0%, #9a8f4a 55%, #4a4420 100%);
+/* Round 3 Stage B's Dirt/Rock choices - same weight/shape as .btn-gold so
+   none of the three options reads as the "default" pick, just tinted with
+   the existing --dirt/--rock tokens instead of gold. */
+.btn-dirt {
+  background: linear-gradient(180deg, #b8926a 0%, #8a6338 55%, #3d2a15 100%);
+  color: #fff2c4;
+  border: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -3px 0 rgba(0,0,0,0.3), 4px 4px 0 rgba(0,0,0,0.4);
+}
+.btn-dirt:hover:not(:disabled) { filter: brightness(1.1); }
+.btn-dirt:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -3px 0 rgba(0,0,0,0.3), 2px 2px 0 rgba(0,0,0,0.4);
+}
+
+.btn-rock {
+  background: linear-gradient(180deg, #c9c9c4 0%, #8a8a86 55%, #45454a 100%);
   color: #1a1408;
   border: none;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.25), 4px 4px 0 rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.3), 4px 4px 0 rgba(0,0,0,0.4);
 }
-.btn-foolsgold:hover:not(:disabled) { filter: brightness(1.1); }
-.btn-foolsgold:active:not(:disabled) {
+.btn-rock:hover:not(:disabled) { filter: brightness(1.1); }
+.btn-rock:active:not(:disabled) {
   transform: translateY(2px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.25), 2px 2px 0 rgba(0,0,0,0.4);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -3px 0 rgba(0,0,0,0.3), 2px 2px 0 rgba(0,0,0,0.4);
 }
 
 .btn-ghost {

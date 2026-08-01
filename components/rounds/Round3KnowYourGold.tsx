@@ -6,15 +6,29 @@ import type { Card, GoldChecklistItem } from "@/lib/types";
 
 const CHECKLIST_POINTS_PER_FLAG = 1;
 
-// Same card pool the old Fool's Gold round used - gold_04/gold_05 are the
-// "sounds important but no number" near-misses, folded in alongside the
-// easier generic fg_XX cards so the mix has both obvious fluff and
-// statements that take a beat to disqualify. Text on the gold_nugget cards
-// was rewritten (phase3-content.md) to close the authority gap: each now
-// names who cares, not just a number and a consequence.
-const STAGE_B_CODES = ["fg_01", "fg_02", "gold_04", "gold_05", "nugget_01", "nugget_02", "nugget_04", "nugget_06"];
+// 12 cards across all three layers, not just the Gold/Fool's-Gold pair:
+// fg_01/fg_02 are vague enough to sort as Dirt, gold_04/gold_05 are real
+// consequences with no number yet (Rock, not Gold), and the gold_nugget
+// cards (rewritten in phase3-content.md to close an authority gap - each
+// now names who cares, not just a number and a consequence) are the true
+// Gold. dirt_01/dirt_08 and rock_04/rock_05 round out each layer so the
+// sort isn't just "is this Gold or not" but the full three-way read.
+const STAGE_B_CODES = [
+  "dirt_01", "dirt_08", "fg_01", "fg_02", "rock_04", "rock_05",
+  "gold_04", "gold_05", "nugget_01", "nugget_02", "nugget_04", "nugget_06",
+];
 const STAGE_B_POINTS = 2;
 const TIME_LIMIT_SECONDS = 9;
+
+type StageBBin = "dirt" | "rock" | "gold";
+
+function correctBinFor(category: Card["category"]): StageBBin {
+  if (category === "dirt" || category === "foolsgold") return "dirt";
+  if (category === "rock" || category === "gold") return "rock";
+  return "gold";
+}
+
+const STAGE_B_BIN_LABEL: Record<StageBBin, string> = { dirt: "Dirt", rock: "Rock", gold: "Gold" };
 
 interface ChecklistFlags {
   has_number: boolean;
@@ -80,7 +94,7 @@ export default function Round3KnowYourGold({
   const [bPhase, setBPhase] = useState<"answering" | "revealed">("answering");
   const [secondsLeft, setSecondsLeft] = useState(TIME_LIMIT_SECONDS);
   const [timerBIndex, setTimerBIndex] = useState(-1);
-  const [bResults, setBResults] = useState<Record<string, { correct: boolean; chosen: string | null }>>({});
+  const [bResults, setBResults] = useState<Record<string, { correct: boolean; chosen: StageBBin | null }>>({});
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -159,11 +173,10 @@ export default function Round3KnowYourGold({
     }
   }
 
-  function handleClassify(binKey: "gold" | "foolsgold" | null) {
+  function handleClassify(binKey: StageBBin | null) {
     if (bPhase !== "answering") return;
     const card = currentCard;
-    const correctBin = card.category === "gold_nugget" ? "gold" : "foolsgold";
-    const correct = binKey === correctBin;
+    const correct = binKey === correctBinFor(card.category);
     setBResults((prev) => ({ ...prev, [card.id]: { correct, chosen: binKey } }));
     setBPhase("revealed");
   }
@@ -341,7 +354,7 @@ export default function Round3KnowYourGold({
   const card = currentCard;
   if (!card) return <p className="text-text-dim">Loading cards...</p>;
   const result = bResults[card.id];
-  const correctBin = card.category === "gold_nugget" ? "gold" : "foolsgold";
+  const correctBin = correctBinFor(card.category);
 
   return (
     <div>
@@ -349,7 +362,7 @@ export default function Round3KnowYourGold({
         Stage B &middot; Under Pressure &middot; {bIndex + 1} of {cards.length}
       </p>
       <p className="text-text-dim text-sm mb-4 text-center">
-        Not everything that sounds valuable is gold. Classify each one before the clock runs out.
+        Dirt, Rock, or Gold? Sort each one before the clock runs out.
       </p>
 
       {bPhase === "answering" && (
@@ -366,8 +379,9 @@ export default function Round3KnowYourGold({
       </div>
 
       {bPhase === "answering" && (
-        <div className="grid grid-cols-2 gap-3">
-          <button className="btn btn-foolsgold" onClick={() => handleClassify("foolsgold")}>Fool&rsquo;s Gold</button>
+        <div className="grid grid-cols-3 gap-3">
+          <button className="btn btn-dirt" onClick={() => handleClassify("dirt")}>Dirt</button>
+          <button className="btn btn-rock" onClick={() => handleClassify("rock")}>Rock</button>
           <button className="btn btn-gold" onClick={() => handleClassify("gold")}>Gold</button>
         </div>
       )}
@@ -386,7 +400,7 @@ export default function Round3KnowYourGold({
           </p>
           <div className="ore-card-row p-4 mb-3">
             <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Correct classification</p>
-            <p className="text-sm text-gold font-bold">{correctBin === "gold" ? "Gold" : "Fool's Gold"}</p>
+            <p className="text-sm text-gold font-bold">{STAGE_B_BIN_LABEL[correctBin]}</p>
           </div>
           {card.explanation && (
             <div className="ore-card-row p-4 mb-6">

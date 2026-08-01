@@ -109,9 +109,9 @@ export interface Submission {
 // bonus (2) + the 3 pitch-or-dig decisions (dirt 2 + rock 3 + gold 4 = 9)
 // = 21.
 // Round 3: Stage A's 6 checklist items x 3 points (one per sign) = 18,
-// plus Stage B's 8 timed cards x 2 points = 16, for 34.
-// Total: 14 + 21 + 34 = 69.
-export const MAX_POSSIBLE_SCORE = 69;
+// plus Stage B's 12 timed Dirt/Rock/Gold cards x 2 points = 24, for 42.
+// Total: 14 + 21 + 42 = 77.
+export const MAX_POSSIBLE_SCORE = 77;
 
 export const ROUND_NAMES: Record<number, string> = {
   0: 'Ready to dig',
