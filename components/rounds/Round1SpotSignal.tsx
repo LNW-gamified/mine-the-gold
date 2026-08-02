@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { SignalStatement, SignalType } from "@/lib/types";
-import { SIGNAL_TYPE_LABELS } from "@/lib/types";
+import { SIGNAL_TYPE_LABELS, MEDDPICC_FOCUS_LABELS } from "@/lib/types";
 
 const FULL_POINTS = 2;
 
@@ -185,9 +185,15 @@ export default function Round1SpotSignal({
           >
             {correct ? "Found it — that's the signal." : "Not quite — here's the real signal."}
           </p>
-          <div className="ore-card-row p-4 mb-3">
-            <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Signal type</p>
-            <p className="text-sm text-gold font-bold">{SIGNAL_TYPE_LABELS[current.signal_type]}</p>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="ore-card-row p-4">
+              <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Signal type</p>
+              <p className="text-sm text-gold font-bold">{SIGNAL_TYPE_LABELS[current.signal_type]}</p>
+            </div>
+            <div className="ore-card-row p-4">
+              <p className="text-xs uppercase tracking-widest text-text-dim mb-1">MEDDPICC</p>
+              <p className="text-sm text-gold font-bold">{MEDDPICC_FOCUS_LABELS[current.meddpicc_focus]}</p>
+            </div>
           </div>
           <div className="ore-card-row p-4 mb-6">
             <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Ask this to keep digging</p>

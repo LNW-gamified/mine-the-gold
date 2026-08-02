@@ -50,12 +50,22 @@ export interface DigDeeperPrompt {
 
 export type SignalType = 'frustration' | 'timing' | 'habit' | 'trial_error' | 'goals' | 'uncertainty' | 'gaps';
 
+export type MeddpiccFocus =
+  | 'metrics'
+  | 'economic_buyer'
+  | 'decision_criteria'
+  | 'decision_process'
+  | 'implicate_pain'
+  | 'champion'
+  | 'competition';
+
 export interface SignalStatement {
   id: string;
   text: string;
   signal_type: SignalType;
   ask_question: string;
   explanation: string | null;
+  meddpicc_focus: MeddpiccFocus;
 }
 
 export const SIGNAL_TYPE_LABELS: Record<SignalType, string> = {
@@ -66,6 +76,16 @@ export const SIGNAL_TYPE_LABELS: Record<SignalType, string> = {
   goals: 'Goals',
   uncertainty: 'Uncertainty',
   gaps: 'Gaps',
+};
+
+export const MEDDPICC_FOCUS_LABELS: Record<MeddpiccFocus, string> = {
+  metrics: 'Metrics',
+  economic_buyer: 'Economic Buyer',
+  decision_criteria: 'Decision Criteria',
+  decision_process: 'Decision Process',
+  implicate_pain: 'Implicate Pain',
+  champion: 'Champion',
+  competition: 'Competition',
 };
 
 export type TunnelStage = 'dirt' | 'rock' | 'nugget';
