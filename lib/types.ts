@@ -105,12 +105,12 @@ export interface Submission {
 
 // Round 1: 7 statements x 2 points = 14.
 // Round 2: placement (dirt 3 + rock 3 + nugget 4 = 10) + perfect-tunnel
-// bonus (2) + the 3 pitch-or-dig decisions (dirt 2 + rock 3 + gold 4 = 9)
-// = 21.
-// Round 3: 12 timed Dirt/Rock/Gold cards x 2 points = 24 (the checklist
-// stage that used to add another 18 here was removed).
-// Total: 14 + 21 + 24 = 59.
-export const MAX_POSSIBLE_SCORE = 59;
+// bonus (2) + the 3 pitch-or-dig decisions (dirt 3 + rock 4 + gold 6 = 13,
+// weighted up so this round's richer judgment calls outweigh Round 3's
+// passive timed sort) = 25.
+// Round 3: 12 timed Dirt/Rock/Gold cards x 2 points = 24.
+// Total: 14 + 25 + 24 = 63.
+export const MAX_POSSIBLE_SCORE = 63;
 
 export const ROUND_NAMES: Record<number, string> = {
   0: 'Ready to dig',

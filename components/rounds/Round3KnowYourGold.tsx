@@ -48,7 +48,7 @@ export default function Round3KnowYourGold({
 }) {
   const [cards, setCards] = useState<Card[]>([]);
   const [index, setIndex] = useState(0);
-  const [phase, setPhase] = useState<"answering" | "revealed" | "summary">("answering");
+  const [phase, setPhase] = useState<"intro" | "answering" | "revealed" | "summary">("intro");
   const [secondsLeft, setSecondsLeft] = useState(TIME_LIMIT_SECONDS);
   const [timerIndex, setTimerIndex] = useState(-1);
   const [results, setResults] = useState<Record<string, { correct: boolean; chosen: Bin | null }>>({});
@@ -95,6 +95,39 @@ export default function Round3KnowYourGold({
   }, [phase, index]);
 
   if (cards.length === 0) return <p className="text-text-dim">Loading the next challenge...</p>;
+
+  if (phase === "intro") {
+    return (
+      <div>
+        <p className="text-xs uppercase tracking-widest text-text-dim mb-2 text-center">Before you sort</p>
+        <h2 className="text-xl font-bold gold-text-shimmer mb-4 text-center">What actually makes it Gold?</h2>
+        <p className="text-text-dim text-sm mb-6 text-center">
+          A statement is only Gold when all three of these are true. Missing even one, and it&rsquo;s still Rock.
+        </p>
+        <div className="space-y-3 mb-6">
+          <div className="ore-card-row p-4">
+            <p className="text-sm text-gold font-bold mb-1">A number</p>
+            <p className="text-xs text-text-dim">A dollar figure, a percentage, a count &mdash; something you could actually size.</p>
+          </div>
+          <div className="ore-card-row p-4">
+            <p className="text-sm text-gold font-bold mb-1">A named consequence</p>
+            <p className="text-xs text-text-dim">What that number actually costs them &mdash; in dollars, time, or risk.</p>
+          </div>
+          <div className="ore-card-row p-4">
+            <p className="text-sm text-gold font-bold mb-1">The right person</p>
+            <p className="text-xs text-text-dim">Someone with real authority is the one raising it &mdash; not just anyone.</p>
+          </div>
+        </div>
+        <p className="text-text-dim text-xs mb-6 text-center">
+          Now sort {cards.length} statements as Dirt, Rock, or Gold &mdash; {TIME_LIMIT_SECONDS} seconds each. No time
+          to overthink it.
+        </p>
+        <div className="text-center">
+          <button className="btn btn-gold" onClick={() => setPhase("answering")}>Start the timer</button>
+        </div>
+      </div>
+    );
+  }
 
   function handleClassify(binKey: Bin | null) {
     if (phase !== "answering") return;

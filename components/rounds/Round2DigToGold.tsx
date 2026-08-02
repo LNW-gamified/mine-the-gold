@@ -16,7 +16,13 @@ const BINS: { key: TunnelStage; label: string; colorVar: string }[] = [
 ];
 
 const PLACEMENT_POINTS: Record<TunnelStage, number> = { dirt: 3, rock: 3, nugget: 4 };
-const DECISION_POINTS: Record<TunnelStage, number> = { dirt: 2, rock: 3, nugget: 4 };
+// Weighted up from the original 2/3/4 - this round's dig-vs-pitch decisions
+// (and especially the gold-stage flip to bridge-vs-keep-digging, the
+// single most important judgment call in the whole game) were carrying
+// less point weight than the passive timed sort in Round 3, despite being
+// the richer skill to test. Nugget gets the biggest bump since that flip
+// is the actual lesson, not just another dig-deeper rep.
+const DECISION_POINTS: Record<TunnelStage, number> = { dirt: 3, rock: 4, nugget: 6 };
 const PERFECT_BONUS = 2;
 
 // Char-sum hash of teamId to pin a team's assigned scenario across reloads,
