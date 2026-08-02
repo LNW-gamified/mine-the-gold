@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { MineShaftScenario, TunnelDecision, TunnelStage } from "@/lib/types";
+import { MEDDPICC_FOCUS_LABELS } from "@/lib/types";
 
 const STAGE_ORDER: TunnelStage[] = ["dirt", "rock", "nugget"];
 
@@ -361,11 +362,17 @@ export default function Round2DigToGold({
         >
           {decisionCorrect ? "That's the right move." : "Not quite the right move."}
         </p>
-        <div className="ore-card-row p-4 mb-3">
-          <p className="text-xs uppercase tracking-widest text-text-dim mb-1">
-            {stage === "nugget" ? "The bridge" : "Keep digging"}
-          </p>
-          <p className="text-sm">{decision.correct_response}</p>
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <div className="ore-card-row p-4">
+            <p className="text-xs uppercase tracking-widest text-text-dim mb-1">
+              {stage === "nugget" ? "The bridge" : "Keep digging"}
+            </p>
+            <p className="text-sm">{decision.correct_response}</p>
+          </div>
+          <div className="ore-card-row p-4">
+            <p className="text-xs uppercase tracking-widest text-text-dim mb-1">MEDDPICC</p>
+            <p className="text-sm text-gold font-bold">{MEDDPICC_FOCUS_LABELS[decision.meddpicc_focus]}</p>
+          </div>
         </div>
         {!decisionCorrect && (
           <div className="ore-card-row p-4 mb-6">

@@ -249,6 +249,13 @@ export default function Round3KnowYourGold({
             <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Correct classification</p>
             <p className="text-sm text-gold font-bold">{BIN_LABEL[correctBin]}</p>
           </div>
+          {current.category === "gold_nugget" && (
+            <div className="ore-card-row p-4 mb-3">
+              <p className="text-sm text-gold font-bold">
+                This is Gold — Economic Impact and Compelling Event, the E and C in MEDDPICC.
+              </p>
+            </div>
+          )}
           {current.explanation && (
             <div className="ore-card-row p-4 mb-6">
               <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Why</p>

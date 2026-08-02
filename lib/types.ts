@@ -96,6 +96,7 @@ export interface TunnelDecision {
   stage: TunnelStage;
   correct_response: string;
   wrong_response: string;
+  meddpicc_focus: MeddpiccFocus;
 }
 
 export interface GoldChecklistItem {
