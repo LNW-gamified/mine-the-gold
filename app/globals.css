@@ -451,7 +451,7 @@ h1, h2, h3, .display {
   }
 }
 
-/* Round 3 Stage B's Dirt/Rock choices - same weight/shape as .btn-gold so
+/* Round 3's Dirt/Rock choices - same weight/shape as .btn-gold so
    none of the three options reads as the "default" pick, just tinted with
    the existing --dirt/--rock tokens instead of gold. */
 .btn-dirt {
