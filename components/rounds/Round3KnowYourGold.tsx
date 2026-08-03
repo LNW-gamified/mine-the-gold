@@ -4,13 +4,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Card } from "@/lib/types";
 
-// 12 cards across all three layers, not just the Gold/Fool's-Gold pair:
-// fg_01/fg_02 are vague enough to sort as Dirt, gold_04/gold_05 are real
-// consequences with no number yet (Rock, not Gold), and the gold_nugget
-// cards (rewritten in phase3-content.md to close an authority gap - each
-// now names who cares, not just a number and a consequence) are the true
-// Gold. dirt_01/dirt_08 and rock_04/rock_05 round out each layer so the
-// sort isn't just "is this Gold or not" but the full three-way read.
+// 12 cards across all three layers: dirt_01/dirt_08/fg_01/fg_02 sort as
+// Dirt, rock_04/rock_05/gold_04/gold_05 as Rock, and nugget_01/nugget_02/
+// nugget_04/nugget_06 as the true Gold - straightforward Dirt/Rock/Gold
+// reads, no "sounds like a higher tier but isn't" trap framing.
 const CODES = [
   "dirt_01", "dirt_08", "fg_01", "fg_02", "rock_04", "rock_05",
   "gold_04", "gold_05", "nugget_01", "nugget_02", "nugget_04", "nugget_06",

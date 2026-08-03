@@ -99,6 +99,19 @@ export interface TunnelDecision {
   meddpicc_focus: MeddpiccFocus;
 }
 
+export type DigToGoldTier = 'dirt' | 'rock' | 'gold' | 'nugget';
+
+export interface DigToGoldBeat {
+  id: string;
+  sequence: number;
+  tier: DigToGoldTier;
+  customer_text: string;
+  correct_response: string;
+  wrong_question_response: string;
+  premature_pitch_response: string;
+  meddpicc_focus: MeddpiccFocus | null;
+}
+
 export interface GoldChecklistItem {
   id: string;
   text: string;
@@ -125,13 +138,11 @@ export interface Submission {
 }
 
 // Round 1: 7 statements x 2 points = 14.
-// Round 2: placement (dirt 3 + rock 3 + nugget 4 = 10) + perfect-tunnel
-// bonus (2) + the 3 pitch-or-dig decisions (dirt 3 + rock 4 + gold 6 = 13,
-// weighted up so this round's richer judgment calls outweigh Round 3's
-// passive timed sort) = 25.
+// Round 2: 5 sequential beats, each scored 2 (correct) / 1 (valid but not
+// the sharpest) / 0 (premature pitch) = 10 max.
 // Round 3: 12 timed Dirt/Rock/Gold cards x 2 points = 24.
-// Total: 14 + 25 + 24 = 63.
-export const MAX_POSSIBLE_SCORE = 63;
+// Total: 14 + 10 + 24 = 48.
+export const MAX_POSSIBLE_SCORE = 48;
 
 export const ROUND_NAMES: Record<number, string> = {
   0: 'Ready to dig',
