@@ -618,6 +618,17 @@ h1, h2, h3, .display {
    "you left gold on the table" rather than "you picked the wrong thing". */
 .clue-chip.missed-reveal { background: transparent; border: 2px dashed var(--gold); color: var(--gold); }
 
+/* Round1SpotSignal.tsx's reveal-only phrase highlighting - same gold
+   treatment as .clue-chip.correct-reveal above, just for inline <mark>
+   spans within a sentence instead of a standalone chip. */
+.clue-highlight {
+  background: var(--gold);
+  color: #100d09;
+  font-weight: 600;
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
 input, select, textarea {
   background: var(--surface);
   border: 1px solid var(--border);

@@ -66,6 +66,7 @@ export interface SignalStatement {
   ask_question: string;
   explanation: string | null;
   meddpicc_focus: MeddpiccFocus;
+  highlight_phrases: string[] | null;
 }
 
 export const SIGNAL_TYPE_LABELS: Record<SignalType, string> = {

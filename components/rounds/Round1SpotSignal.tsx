@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import type { SignalStatement, SignalType } from "@/lib/types";
 import { SIGNAL_TYPE_LABELS } from "@/lib/types";
@@ -34,6 +34,38 @@ function seededShuffle<T>(arr: T[], seed: string): T[] {
     [result[i], result[j]] = [result[j], result[i]];
   }
   return result;
+}
+
+// Reveal-only: wraps each highlight_phrases entry in a highlighted span.
+// Matches are exact-substring and case-sensitive (no fuzzy matching), and
+// only the first occurrence of each phrase is highlighted. Overlapping
+// spans (shouldn't happen with well-formed data) are skipped defensively
+// rather than rendered garbled.
+function renderHighlighted(text: string, phrases: string[] | null): ReactNode {
+  if (!phrases || phrases.length === 0) return text;
+
+  const spans = phrases
+    .map((phrase) => {
+      const start = text.indexOf(phrase);
+      return start === -1 ? null : { start, end: start + phrase.length };
+    })
+    .filter((s): s is { start: number; end: number } => s !== null)
+    .sort((a, b) => a.start - b.start);
+
+  const nodes: ReactNode[] = [];
+  let cursor = 0;
+  spans.forEach((span, i) => {
+    if (span.start < cursor) return;
+    if (span.start > cursor) nodes.push(text.slice(cursor, span.start));
+    nodes.push(
+      <mark key={i} className="clue-highlight">
+        {text.slice(span.start, span.end)}
+      </mark>
+    );
+    cursor = span.end;
+  });
+  if (cursor < text.length) nodes.push(text.slice(cursor));
+  return nodes;
 }
 
 export default function Round1SpotSignal({
@@ -159,7 +191,9 @@ export default function Round1SpotSignal({
 
       <div className="statement-card mb-6">
         <p className="text-xs uppercase tracking-widest text-text-dim mb-2">The prospect says:</p>
-        <p className="text-lg leading-relaxed">{current.text}</p>
+        <p className="text-lg leading-relaxed">
+          {phase === "revealed" ? renderHighlighted(current.text, current.highlight_phrases) : current.text}
+        </p>
       </div>
 
       {phase === "answering" && (
