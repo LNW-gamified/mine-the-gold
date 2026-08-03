@@ -213,12 +213,23 @@ export default function Round3KnowYourGold({
       </p>
 
       {phase === "answering" && (
-        <p
-          className="text-center font-bold mb-4 stencil"
-          style={{ color: secondsLeft <= 3 ? "var(--wildcard)" : "var(--text-dim)" }}
-        >
-          {secondsLeft}s
-        </p>
+        <div className="mb-4">
+          <p
+            className={`text-center font-bold stencil text-4xl mb-2 ${secondsLeft <= 3 ? "timer-urgent" : ""}`}
+            style={{ color: secondsLeft <= 3 ? "var(--wildcard)" : "var(--gold)" }}
+          >
+            {secondsLeft}s
+          </p>
+          <div className="timer-track">
+            <div
+              className="timer-fill"
+              style={{
+                width: `${(secondsLeft / TIME_LIMIT_SECONDS) * 100}%`,
+                background: secondsLeft <= 3 ? "var(--wildcard)" : "var(--gold)",
+              }}
+            />
+          </div>
+        </div>
       )}
 
       <div className="statement-card mb-6">
