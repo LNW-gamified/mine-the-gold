@@ -27,34 +27,34 @@ interface RevealCopy {
 const REVEAL_COPY: Record<number, RevealCopy> = {
   1: {
     correct:
-      "This asks what's actually blocking early involvement — it gets to the root cause instead of just collecting more data.",
+      "This asks what's actually blocking early involvement: it gets to the root cause instead of just collecting more data.",
     wrongQuestion:
       "A fair discovery question, but it moves sideways into volume instead of digging into what they just told you.",
     prematurePitch:
-      "You're pitching before you've even confirmed why they're getting in late — too early to have earned this.",
+      "You're pitching before you've even confirmed why they're getting in late: too early to have earned this.",
   },
   2: {
     correct:
-      "This moves the conversation from cause (late awareness) to consequence (competitiveness) — the natural next beat.",
+      "This moves the conversation from cause (late awareness) to consequence (competitiveness): the natural next beat.",
     wrongQuestion: "Useful context for later, but it sidesteps the consequence they just hinted at.",
-    prematurePitch: "Still too early — you haven't established what late awareness is actually costing them yet.",
+    prematurePitch: "Still too early: you haven't established what late awareness is actually costing them yet.",
   },
   3: {
     correct:
-      "This ties the reactive pattern to something measurable — the bridge from behavior to business impact.",
+      "This ties the reactive pattern to something measurable: the bridge from behavior to business impact.",
     wrongQuestion: "Good to know eventually, but it doesn't follow up on the reactive pattern they just named.",
     prematurePitch: "You still haven't quantified what “responding instead of influencing” actually costs them.",
   },
   4: {
-    correct: "They just put a number on it — this checks whether that number has reached the people who can act on it.",
+    correct: "They just put a number on it: this checks whether that number has reached the people who can act on it.",
     wrongQuestion: "A fine staffing question another time, but it lets a $4M number go by without following up on it.",
     prematurePitch: "They just handed you Gold-tier pain, but pitching here skips confirming who above them actually cares.",
   },
   5: {
-    correct: "This asks what's actually at stake if the CRO's plan doesn't land — the real bridge into next steps.",
+    correct: "This asks what's actually at stake if the CRO's plan doesn't land: the real bridge into next steps.",
     wrongQuestion: "Interesting context, but tenure doesn't build on the stakes they just raised.",
     prematurePitch:
-      "Even with a CRO mandate on the table, you still haven't confirmed what's riding on it — this jumps straight to the pitch.",
+      "Even with a CRO mandate on the table, you still haven't confirmed what's riding on it: this jumps straight to the pitch.",
   },
 };
 
@@ -75,8 +75,8 @@ function outcomeColor(points: number): string {
 
 function outcomeHeadline(points: number): string {
   if (points === 2) return "That's the sharpest move.";
-  if (points === 1) return "Valid question — but not the sharpest move.";
-  return "That's a pitch — too early to have earned it.";
+  if (points === 1) return "Valid question, but not the sharpest move.";
+  return "That's a pitch: too early to have earned it.";
 }
 
 export default function Round2DigToGold({

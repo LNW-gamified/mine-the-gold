@@ -99,21 +99,21 @@ export default function Round3KnowYourGold({
         <p className="text-xs uppercase tracking-widest text-text-dim mb-2 text-center">Before you sort</p>
         <h2 className="text-xl font-bold gold-text-shimmer mb-4 text-center">What actually makes it Gold?</h2>
         <p className="text-text-dim text-sm mb-6 text-center">
-          A statement is only Gold when both of these are true &mdash; the E and C in MEDDPICC. Missing either, and
+          A statement is only Gold when both of these are true: the E and C in MEDDPICC. Missing either, and
           it&rsquo;s still Rock.
         </p>
         <div className="space-y-3 mb-6">
           <div className="ore-card-row p-4">
             <p className="text-sm text-gold font-bold mb-1">Economic Impact</p>
-            <p className="text-xs text-text-dim">A real cost &mdash; money, deals, or targets at risk. Something you could actually size.</p>
+            <p className="text-xs text-text-dim">A real cost: money, deals, or targets at risk. Something you could actually size.</p>
           </div>
           <div className="ore-card-row p-4">
             <p className="text-sm text-gold font-bold mb-1">Compelling Event</p>
-            <p className="text-xs text-text-dim">Why it matters right now &mdash; a deadline, a losing streak, a number that just moved.</p>
+            <p className="text-xs text-text-dim">Why it matters right now: a deadline, a losing streak, a number that just moved.</p>
           </div>
         </div>
         <p className="text-text-dim text-xs mb-6 text-center">
-          Now sort {cards.length} statements as Dirt, Rock, or Gold &mdash; {TIME_LIMIT_SECONDS} seconds each. No time
+          Now sort {cards.length} statements as Dirt, Rock, or Gold, {TIME_LIMIT_SECONDS} seconds each. No time
           to overthink it.
         </p>
         <div className="text-center">
@@ -245,7 +245,7 @@ export default function Round3KnowYourGold({
             style={{ color: result?.correct ? "var(--gold)" : "var(--wildcard)" }}
           >
             {result?.chosen === null
-              ? "Out of time — here's the answer."
+              ? "Out of time: here's the answer."
               : result?.correct
                 ? "Correct."
                 : "Not quite."}
@@ -257,7 +257,7 @@ export default function Round3KnowYourGold({
           {current.category === "gold_nugget" && (
             <div className="ore-card-row p-4 mb-3">
               <p className="text-sm text-gold font-bold">
-                This is Gold — Economic Impact and Compelling Event, the E and C in MEDDPICC.
+                This is Gold: Economic Impact and Compelling Event, the E and C in MEDDPICC.
               </p>
             </div>
           )}

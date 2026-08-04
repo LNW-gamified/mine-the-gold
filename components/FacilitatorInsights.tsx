@@ -39,7 +39,7 @@ export default function FacilitatorInsights({ sessionId }: { sessionId: string }
         const grouped: Record<string, ItemStat> = {};
         for (const row of data as RawInsightRow[]) {
           const cardText = Array.isArray(row.cards) ? row.cards[0]?.text : row.cards?.text;
-          const text = cardText ?? row.answer_text ?? "—";
+          const text = cardText ?? row.answer_text ?? "-";
           const key = `${row.round}:${row.card_id ?? row.answer_text}`;
           if (!grouped[key]) {
             grouped[key] = { key, text, round: row.round, total: 0, correctCount: 0, explanation: row.explanation };

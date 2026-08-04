@@ -22,7 +22,7 @@ function makeRoomCode() {
 // round number, since neither is really "Round 0" or "Round 5") for the
 // two bookend states.
 function roundStatusLabel(currentRound: number): string {
-  const short = ROUND_SHORT_NAMES[currentRound] ?? "—";
+  const short = ROUND_SHORT_NAMES[currentRound] ?? "-";
   return currentRound >= 1 && currentRound <= 4 ? `Round ${currentRound} - ${short}` : short;
 }
 

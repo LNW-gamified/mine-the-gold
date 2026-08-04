@@ -78,7 +78,7 @@ export default function RoundRecap({ teamId, round }: { teamId: string; round: n
             className="ore-card p-3"
             style={{ borderLeft: `4px solid ${row.correct ? "var(--gold)" : "var(--wildcard)"}` }}
           >
-            <p className="text-sm">{row.answer_text ?? row.card_text ?? "—"}</p>
+            <p className="text-sm">{row.answer_text ?? row.card_text ?? "-"}</p>
             <p className="text-xs text-text-dim mt-1">
               {row.correct ? "Correct" : "Missed"} &middot; {row.points_awarded} pts
             </p>

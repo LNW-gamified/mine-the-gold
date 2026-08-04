@@ -217,7 +217,7 @@ export default function Round1SpotSignal({
             className="text-center font-bold mb-4"
             style={{ color: correct ? "var(--gold)" : "var(--wildcard)" }}
           >
-            {correct ? "Found it — that's the signal." : "Not quite — here's the real signal."}
+            {correct ? "Found it: that's the signal." : "Not quite: here's the real signal."}
           </p>
           {!correct && selectedType && current.wrong_answer_reasons?.[selectedType] && (
             <div className="ore-card-row p-4 mb-3">
