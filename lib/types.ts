@@ -67,6 +67,7 @@ export interface SignalStatement {
   explanation: string | null;
   meddpicc_focus: MeddpiccFocus;
   highlight_phrases: string[] | null;
+  wrong_answer_reasons: Partial<Record<SignalType, string>> | null;
 }
 
 export const SIGNAL_TYPE_LABELS: Record<SignalType, string> = {

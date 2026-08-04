@@ -219,6 +219,14 @@ export default function Round1SpotSignal({
           >
             {correct ? "Found it — that's the signal." : "Not quite — here's the real signal."}
           </p>
+          {!correct && selectedType && current.wrong_answer_reasons?.[selectedType] && (
+            <div className="ore-card-row p-4 mb-3">
+              <p className="text-xs uppercase tracking-widest text-text-dim mb-1">
+                Why not {SIGNAL_TYPE_LABELS[selectedType]}?
+              </p>
+              <p className="text-sm">{current.wrong_answer_reasons[selectedType]}</p>
+            </div>
+          )}
           <div className="ore-card-row p-4 mb-3">
             <p className="text-xs uppercase tracking-widest text-text-dim mb-1">Signal type</p>
             <p className="text-sm text-gold font-bold">{SIGNAL_TYPE_LABELS[current.signal_type]}</p>
