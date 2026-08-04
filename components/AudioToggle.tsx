@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getLastTrack, isTrackPlaying, onTrackChange, playTrack, stopTrack } from "@/lib/audioManager";
+import { isMuted, onTrackChange, setMuted } from "@/lib/audioManager";
 
 function IconSpeakerOn() {
   return (
@@ -24,38 +24,33 @@ function IconSpeakerOff() {
 
 // Mounted once in the root layout so it (and the singleton it controls in
 // lib/audioManager) survives client-side navigation between pages. Reflects
-// whatever's actually playing rather than tracking its own on/off
-// assumption - onTrackChange fires whenever playTrack/stopTrack is called
-// from anywhere, including the homepage and join-page buttons this doesn't
-// own.
+// the persisted mute preference (not just whether something happens to be
+// playing right now) - onTrackChange fires whenever that preference or
+// playback state changes, from anywhere, including the homepage and
+// join-page buttons this doesn't own.
 export default function AudioToggle() {
-  const [playing, setPlaying] = useState(() => isTrackPlaying());
+  const [muted, setMutedState] = useState(() => isMuted());
 
   useEffect(() => {
-    return onTrackChange(() => setPlaying(isTrackPlaying()));
+    return onTrackChange(() => setMutedState(isMuted()));
   }, []);
 
   function toggle() {
-    if (playing) {
-      stopTrack();
-      return;
-    }
     // Unmuting restarts the current track from the top rather than
     // resuming mid-way through - that's an accepted simplification, not
     // a bug.
-    const last = getLastTrack();
-    if (last) playTrack(last.src, last.opts);
+    setMuted(!muted);
   }
 
   return (
     <button
       onClick={toggle}
-      aria-label={playing ? "Mute sound" : "Unmute sound"}
-      aria-pressed={playing}
+      aria-label={muted ? "Unmute sound" : "Mute sound"}
+      aria-pressed={!muted}
       className="bin-icon fixed bottom-6 right-6 z-40 cursor-pointer hover:brightness-125 transition"
-      style={{ color: playing ? "#fff2c4" : "#b8a988" }}
+      style={{ color: muted ? "#b8a988" : "#fff2c4" }}
     >
-      {playing ? <IconSpeakerOn /> : <IconSpeakerOff />}
+      {muted ? <IconSpeakerOff /> : <IconSpeakerOn />}
     </button>
   );
 }

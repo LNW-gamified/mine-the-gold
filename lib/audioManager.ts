@@ -26,6 +26,29 @@ function readLastTrack(): { src: string; opts: { loop: boolean; volume: number }
 
 let lastTrack: { src: string; opts: { loop: boolean; volume: number } } | null = readLastTrack();
 
+// The user's actual mute preference - distinct from "is something playing
+// right now". Previously mute was only ever inferred from playback state,
+// which meant a hard reload (module reinitializes, currentAudio starts
+// null) had no memory of it: every page's mount-time playTrack() call would
+// just start audio again regardless of whether the user had muted before
+// refreshing. Persisted so that preference survives a reload.
+const MUTED_KEY = "mtg_muted";
+
+function readMuted(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(MUTED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+let muted = readMuted();
+
+export function isMuted(): boolean {
+  return muted;
+}
+
 // Lets UI outside the call site (e.g. a mute button mounted in the root
 // layout) know playback state changed, since this module has no React
 // state of its own to trigger a re-render.
@@ -49,6 +72,15 @@ export function playTrack(
   try {
     localStorage.setItem(LAST_TRACK_KEY, JSON.stringify(lastTrack));
   } catch {}
+
+  // Muted: remember what *would* be playing (above) so unmuting resumes
+  // the right thing, but don't actually start audio. Every page calls
+  // playTrack() unconditionally on mount, so this is the one place that
+  // has to enforce the user's mute choice.
+  if (muted) {
+    stopTrack();
+    return;
+  }
 
   // Already playing this exact track, don't restart it from the beginning.
   if (currentSrc === src && currentAudio && !currentAudio.paused) return;
@@ -81,8 +113,21 @@ export function stopTrack() {
   notify();
 }
 
-export function getLastTrack() {
-  return lastTrack;
+// The user-facing mute toggle: persists the preference (unlike stopTrack,
+// which just silences whatever's playing right now without remembering
+// why) and, on unmute, resumes whatever was last requested.
+export function setMuted(next: boolean) {
+  muted = next;
+  try {
+    localStorage.setItem(MUTED_KEY, next ? "1" : "0");
+  } catch {}
+  if (next) {
+    stopTrack();
+  } else if (lastTrack) {
+    playTrack(lastTrack.src, lastTrack.opts);
+  } else {
+    notify();
+  }
 }
 
 export function setTrackVolume(volume: number) {
@@ -99,15 +144,22 @@ export function getCurrentTrackSrc(): string | null {
 
 // A second, independent channel for one-shot voiceover clips that layers on
 // top of whatever's playing on the music channel above, without touching
-// currentAudio/currentSrc at all. Deliberately no pause/stop/mute wiring or
-// AudioToggle integration - it's short-lived (plays once to completion, the
-// element is just garbage collected) and the mute toggle only ever controls
-// the looping music channel.
+// currentAudio/currentSrc at all - it's short-lived (plays once to
+// completion, the element is just garbage collected) so there's no
+// isPlaying/currentSrc state for it to keep in sync. Still respects mute
+// though: a muted toggle should mean no sound from the app, not just no
+// looping music. onEnded still fires immediately so a caller relying on it
+// to release a ducked volume (see app/page.tsx) doesn't hang waiting for a
+// clip that was never going to play.
 export function playVoiceover(
   src: string,
   { volume = 0.9, onEnded }: { volume?: number; onEnded?: () => void } = {}
 ) {
   if (typeof window === "undefined") return;
+  if (muted) {
+    onEnded?.();
+    return;
+  }
   const audio = new Audio(src);
   audio.loop = false;
   audio.volume = volume;

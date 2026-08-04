@@ -1,10 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import HeroBackground from "@/components/HeroBackground";
-import { getCurrentTrackSrc, playTrack, playVoiceover, setTrackVolume } from "@/lib/audioManager";
+import { getCurrentTrackSrc, playTrack, playVoiceover, setTrackVolume, stopTrack } from "@/lib/audioManager";
 
 export default function Home() {
+  // The homepage has no ambient track of its own - it's silent until
+  // "Start Digging" is clicked. Without this, navigating back here (e.g.
+  // browser back from /join) left whatever track that flow started still
+  // playing, since nothing on this page ever told it to stop.
+  useEffect(() => {
+    stopTrack();
+  }, []);
+
   return (
     <main className="flex-1 relative flex flex-col">
       <HeroBackground />
