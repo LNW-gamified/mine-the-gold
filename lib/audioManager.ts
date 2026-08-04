@@ -110,6 +110,7 @@ export function stopTrack() {
   }
   currentAudio = null;
   currentSrc = null;
+  stopVoiceover();
   notify();
 }
 
@@ -145,12 +146,13 @@ export function getCurrentTrackSrc(): string | null {
 // A second, independent channel for one-shot voiceover clips that layers on
 // top of whatever's playing on the music channel above, without touching
 // currentAudio/currentSrc at all - it's short-lived (plays once to
-// completion, the element is just garbage collected) so there's no
-// isPlaying/currentSrc state for it to keep in sync. Still respects mute
-// though: a muted toggle should mean no sound from the app, not just no
-// looping music. onEnded still fires immediately so a caller relying on it
-// to release a ducked volume (see app/page.tsx) doesn't hang waiting for a
-// clip that was never going to play.
+// completion) so there's no isPlaying/currentSrc state for it to keep in
+// sync with the music channel. Still tracked well enough to be stoppable
+// though: stopTrack() (and so setMuted(true) and any page that calls it on
+// mount) also cuts off an in-progress voiceover - otherwise muting or
+// navigating away mid-clip left it talking to completion regardless.
+let currentVoiceover: HTMLAudioElement | null = null;
+
 export function playVoiceover(
   src: string,
   { volume = 0.9, onEnded }: { volume?: number; onEnded?: () => void } = {}
@@ -160,9 +162,25 @@ export function playVoiceover(
     onEnded?.();
     return;
   }
+  if (currentVoiceover) {
+    currentVoiceover.pause();
+    currentVoiceover.src = "";
+  }
   const audio = new Audio(src);
   audio.loop = false;
   audio.volume = volume;
-  if (onEnded) audio.addEventListener("ended", onEnded);
+  audio.addEventListener("ended", () => {
+    if (currentVoiceover === audio) currentVoiceover = null;
+    onEnded?.();
+  });
   audio.play().catch(() => {});
+  currentVoiceover = audio;
+}
+
+export function stopVoiceover() {
+  if (currentVoiceover) {
+    currentVoiceover.pause();
+    currentVoiceover.src = "";
+  }
+  currentVoiceover = null;
 }
