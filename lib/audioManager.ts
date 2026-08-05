@@ -123,11 +123,13 @@ export function setMuted(next: boolean) {
     localStorage.setItem(MUTED_KEY, next ? "1" : "0");
   } catch {}
   if (next) {
+    // stopTrack() also cuts the voiceover (via stopVoiceover), but it
+    // leaves lastVoiceover intact so the clip below can pick back up.
     stopTrack();
-  } else if (lastTrack) {
-    playTrack(lastTrack.src, lastTrack.opts);
   } else {
-    notify();
+    if (lastTrack) playTrack(lastTrack.src, lastTrack.opts);
+    if (lastVoiceover) playVoiceover(lastVoiceover.src, lastVoiceover.opts);
+    if (!lastTrack && !lastVoiceover) notify();
   }
 }
 
@@ -153,6 +155,13 @@ export function getCurrentTrackSrc(): string | null {
 // navigating away mid-clip left it talking to completion regardless.
 let currentVoiceover: HTMLAudioElement | null = null;
 
+// Mirrors lastTrack, but for the voiceover channel: lets setMuted's unmute
+// path resume a clip that got cut off mid-play by stopVoiceover(), the same
+// way it resumes the music track. Cleared when the clip finishes on its own
+// (see the 'ended' listener below) so a stale, already-finished voiceover
+// never replays just because the user toggles mute afterward.
+let lastVoiceover: { src: string; opts: { volume: number; onEnded?: () => void } } | null = null;
+
 export function playVoiceover(
   src: string,
   { volume = 0.9, onEnded }: { volume?: number; onEnded?: () => void } = {}
@@ -166,11 +175,13 @@ export function playVoiceover(
     currentVoiceover.pause();
     currentVoiceover.src = "";
   }
+  lastVoiceover = { src, opts: { volume, onEnded } };
   const audio = new Audio(src);
   audio.loop = false;
   audio.volume = volume;
   audio.addEventListener("ended", () => {
     if (currentVoiceover === audio) currentVoiceover = null;
+    if (lastVoiceover?.src === src) lastVoiceover = null;
     onEnded?.();
   });
   audio.play().catch(() => {});
