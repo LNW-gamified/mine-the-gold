@@ -13,7 +13,7 @@ const CODES = [
   "gold_04", "gold_05", "nugget_01", "nugget_02", "nugget_04", "nugget_06",
 ];
 const POINTS_PER_CARD = 2;
-const TIME_LIMIT_SECONDS = 9;
+const TIME_LIMIT_SECONDS = 14;
 
 type Bin = "dirt" | "rock" | "gold";
 
